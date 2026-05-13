@@ -47,6 +47,34 @@ button:hover,
   border-color: var(--accent);
 }
 
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 0;
+}
+
+.button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -243,7 +271,8 @@ select {
 
 .profile-link-secondary {
   min-height: 26px;
-  padding: 0 10px;
+  width: 28px;
+  padding: 0;
   border-radius: 999px;
   background: #ffffff;
   color: var(--muted);
@@ -256,6 +285,17 @@ select {
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 4px;
+}
+
+.wowhead-link {
+  width: 28px;
+  padding: 0;
+}
+
+.wowhead-favicon {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .equipment {

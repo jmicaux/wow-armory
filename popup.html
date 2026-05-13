@@ -19,7 +19,9 @@
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </button>
-        <button type="button" id="refresh-button" title="Refresh character">Refresh</button>
+        <button type="button" id="refresh-button" class="icon-button" title="Refresh character" aria-label="Refresh character">
+          <span class="button-icon" aria-hidden="true">↻</span>
+        </button>
       </div>
     </header>
 
@@ -57,7 +59,9 @@
         <span>Character</span>
         <input id="character" name="character" type="text" autocomplete="off" placeholder="Poilgrês">
       </label>
-      <button type="submit">Load</button>
+      <button type="submit" class="icon-button" title="Load character" aria-label="Load character">
+        <span class="button-icon" aria-hidden="true">↦</span>
+      </button>
     </form>
 
     <p class="status" id="status" role="status">Enter a character to load profile data.</p>
@@ -85,8 +89,14 @@
       </section>
 
       <div class="profile-links">
-        <a class="profile-link profile-link-secondary" id="profile-link" href="#" target="_blank" rel="noopener">Open Raider.IO profile</a>
-        <a class="profile-link profile-link-secondary" id="official-link" href="#" target="_blank" rel="noopener">Open official Armory</a>
+        <a class="profile-link profile-link-secondary" id="profile-link" href="#" target="_blank" rel="noopener" aria-label="Open Raider.IO profile" title="Open Raider.IO profile">
+          <span class="button-icon" aria-hidden="true">↗</span>
+          <span class="sr-only">Open Raider.IO profile</span>
+        </a>
+        <a class="profile-link profile-link-secondary" id="official-link" href="#" target="_blank" rel="noopener" aria-label="Open official Armory" title="Open official Armory">
+          <span class="button-icon" aria-hidden="true">⌂</span>
+          <span class="sr-only">Open official Armory</span>
+        </a>
       </div>
     </section>
 
@@ -98,7 +108,10 @@
         <p>Raider.IO does not currently expose this character. You can still open the official World of Warcraft profile.</p>
       </div>
       <div class="profile-links">
-        <a class="profile-link profile-link-secondary" id="fallback-official-link" href="#" target="_blank" rel="noopener">Open official Armory</a>
+        <a class="profile-link profile-link-secondary" id="fallback-official-link" href="#" target="_blank" rel="noopener" aria-label="Open official Armory" title="Open official Armory">
+          <span class="button-icon" aria-hidden="true">⌂</span>
+          <span class="sr-only">Open official Armory</span>
+        </a>
       </div>
     </section>
 

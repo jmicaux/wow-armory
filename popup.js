@@ -430,6 +430,43 @@
     status.classList.toggle('is-error', Boolean(isError));
   }
 
+  function setIconLabel(node, iconText, label) {
+    node.textContent = '';
+
+    var icon = document.createElement('span');
+    icon.className = 'button-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = iconText;
+    node.appendChild(icon);
+
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = label;
+    node.appendChild(sr);
+
+    node.setAttribute('aria-label', label);
+    node.setAttribute('title', label);
+  }
+
+  function setWowheadLink(node, label) {
+    node.textContent = '';
+
+    var icon = document.createElement('img');
+    icon.className = 'wowhead-favicon';
+    icon.src = 'assets/wow_favicon.gif';
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+    node.appendChild(icon);
+
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = label;
+    node.appendChild(sr);
+
+    node.setAttribute('aria-label', label);
+    node.setAttribute('title', label);
+  }
+
   function localeKey() {
     return WowArmory.cleanLocale(locale.value);
   }
@@ -547,17 +584,17 @@
     document.documentElement.lang = localeKey();
     document.title = ui.title;
     menuButton.setAttribute('aria-label', ui.openSettings);
-    refreshButton.textContent = ui.refresh;
+    setIconLabel(refreshButton, '↻', ui.refresh);
     form.setAttribute('aria-label', ui.openSettings);
     form.querySelector('label span').textContent = ui.locale;
     form.querySelectorAll('label span')[1].textContent = ui.region;
     form.querySelectorAll('label span')[2].textContent = ui.realm;
     form.querySelectorAll('label span')[3].textContent = ui.character;
-    form.querySelector('button[type="submit"]').textContent = ui.load;
+    setIconLabel(form.querySelector('button[type="submit"]'), '↦', ui.load);
     document.querySelector('.status').textContent = ui.statusIdle;
-    document.querySelector('#profile-link').textContent = ui.openRaidio;
-    document.querySelector('#official-link').textContent = ui.openOfficial;
-    document.querySelector('#fallback-official-link').textContent = ui.openOfficial;
+    setIconLabel(document.querySelector('#profile-link'), '↗', ui.openRaidio);
+    setIconLabel(document.querySelector('#official-link'), '⌂', ui.openOfficial);
+    setIconLabel(document.querySelector('#fallback-official-link'), '⌂', ui.openOfficial);
     document.querySelector('#fallback-profile .eyebrow').textContent = ui.officialArmory;
     document.querySelector('#fallback-profile p:last-of-type').textContent = ui.fallbackText;
   }
@@ -746,16 +783,16 @@
     equipmentDetail.appendChild(list);
 
     var link = document.createElement('a');
-    link.className = 'profile-link profile-link-secondary';
+    link.className = 'profile-link profile-link-secondary wowhead-link';
     link.href = itemUrl(item);
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = ui.openWowhead;
     var data = wowheadData(item);
     if (data) {
       link.setAttribute('data-wowhead', data);
       link.setAttribute('data-wh-rename-link', 'true');
     }
+    setWowheadLink(link, ui.openWowhead);
     equipmentDetail.appendChild(link);
 
     resolveLocalizedItemName(item).then(function (name) {
@@ -859,14 +896,12 @@
     ].filter(Boolean).join(' · ');
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
     profileLink.href = data.profile_url || '#';
-    profileLink.textContent = ui.openRaidio;
     officialLink.href = WowArmory.officialProfileUrl({
       region: data.region || currentSettings().region,
       realm: data.realm || currentSettings().realm,
       character: data.name || currentSettings().character,
       locale: currentSettings().locale
     });
-    officialLink.textContent = ui.openOfficial;
     return primeLocalizedItemNames(data.gear && data.gear.items).then(function () {
       renderEquipment(data.gear && data.gear.items);
       return data;
@@ -881,7 +916,6 @@
     fallbackName.textContent = settings.character;
     fallbackMeta.textContent = settings.region.toUpperCase() + ' · ' + settings.realm;
     fallbackOfficialLink.href = officialUrl;
-    fallbackOfficialLink.textContent = ui.openOfficial;
     fallbackProfile.classList.remove('is-hidden');
     setStatus(lastFallbackMessage, true);
   }
