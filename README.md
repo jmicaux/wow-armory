@@ -32,5 +32,5 @@ The original UWA widget disappeared with the shutdown of netvibes.com. This rebu
 
 ## Notes
 
-The extension does not use Blizzard API credentials. Data availability depends on Raider.IO.
+The extension does not use Blizzard API credentials. Data availability depends on Raider.IO and Wowhead.com.
 When Raider.IO has no public data for the configured character, the popup falls back to a direct link to the official World of Warcraft Armory profile.

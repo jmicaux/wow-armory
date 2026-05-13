@@ -538,7 +538,12 @@
     if (path) {
       base += path + '/';
     }
-    return base + 'item=' + encodeURIComponent(item.item_id) + '&xml';
+    var slug = localizedItemSlug(item);
+    var href = base + 'item=' + encodeURIComponent(item.item_id);
+    if (slug) {
+      href += '/' + encodeURIComponent(slug);
+    }
+    return href + '&xml';
   }
 
   function localizedItemPageUrl(item) {
@@ -547,7 +552,12 @@
     if (path) {
       base += path + '/';
     }
-    return base + 'item=' + encodeURIComponent(item.item_id);
+    var slug = localizedItemSlug(item);
+    var href = base + 'item=' + encodeURIComponent(item.item_id);
+    if (slug) {
+      href += '/' + encodeURIComponent(slug);
+    }
+    return href;
   }
 
   function parseWowheadItemName(xmlText) {
@@ -569,6 +579,16 @@
   }
 
   function parseWowheadItemNameFromPage(htmlText) {
+    var h1Match = String(htmlText || '').match(/<h1[^>]*class=["'][^"']*(?:heading-size-1|heading-title|item-name)[^"']*["'][^>]*>([^<]+)<\/h1>/i);
+    if (h1Match && h1Match[1]) {
+      return cleanWowheadPageTitle(h1Match[1]);
+    }
+
+    var dataNameMatch = String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i);
+    if (dataNameMatch && dataNameMatch[1]) {
+      return cleanWowheadPageTitle(dataNameMatch[1]);
+    }
+
     var titleMatch = String(htmlText || '').match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
     if (titleMatch && titleMatch[1]) {
       return cleanWowheadPageTitle(titleMatch[1]);
