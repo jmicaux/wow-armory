@@ -448,12 +448,12 @@
     node.setAttribute('title', label);
   }
 
-  function setWowheadLink(node, label) {
+  function setIconLink(node, iconSrc, label) {
     node.textContent = '';
 
     var icon = document.createElement('img');
-    icon.className = 'wowhead-favicon';
-    icon.src = 'assets/wow_favicon.gif';
+    icon.className = 'link-favicon';
+    icon.src = iconSrc;
     icon.alt = '';
     icon.setAttribute('aria-hidden', 'true');
     node.appendChild(icon);
@@ -462,6 +462,25 @@
     sr.className = 'sr-only';
     sr.textContent = label;
     node.appendChild(sr);
+
+    node.setAttribute('aria-label', label);
+    node.setAttribute('title', label);
+  }
+
+  function setWowheadLink(node, label) {
+    node.textContent = '';
+
+    var icon = document.createElement('img');
+    icon.className = 'link-favicon';
+    icon.src = 'assets/wowhead_favicon.ico';
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+    node.appendChild(icon);
+
+    var text = document.createElement('span');
+    text.className = 'link-text';
+    text.textContent = label;
+    node.appendChild(text);
 
     node.setAttribute('aria-label', label);
     node.setAttribute('title', label);
@@ -592,9 +611,9 @@
     form.querySelectorAll('label span')[3].textContent = ui.character;
     setIconLabel(form.querySelector('button[type="submit"]'), '↦', ui.load);
     document.querySelector('.status').textContent = ui.statusIdle;
-    setIconLabel(document.querySelector('#profile-link'), '↗', ui.openRaidio);
-    setIconLabel(document.querySelector('#official-link'), '⌂', ui.openOfficial);
-    setIconLabel(document.querySelector('#fallback-official-link'), '⌂', ui.openOfficial);
+    setIconLink(document.querySelector('#profile-link'), 'assets/raiderio_favicon.ico', ui.openRaidio);
+    setIconLink(document.querySelector('#official-link'), 'assets/wow_favicon.gif', ui.openOfficial);
+    setIconLink(document.querySelector('#fallback-official-link'), 'assets/wow_favicon.gif', ui.openOfficial);
     document.querySelector('#fallback-profile .eyebrow').textContent = ui.officialArmory;
     document.querySelector('#fallback-profile p:last-of-type').textContent = ui.fallbackText;
   }
