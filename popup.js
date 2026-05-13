@@ -129,6 +129,20 @@
     }).filter(Boolean);
   }
 
+  function detailValue(value) {
+    if (!value && value !== 0) {
+      return '';
+    }
+    if (typeof value === 'string' || typeof value === 'number') {
+      return String(value);
+    }
+    return value.name || value.display_string || value.type || value.id || '';
+  }
+
+  function itemType(slot, item) {
+    return detailValue(item.item_subclass || item.item_class || item.item_type || item.inventory_type) || slotLabels[slot] || slot;
+  }
+
   function itemUrl(item) {
     return item && item.item_id ? 'https://www.wowhead.com/item=' + encodeURIComponent(item.item_id) : '#';
   }
@@ -218,6 +232,7 @@
     equipmentDetail.appendChild(header);
 
     var lines = [
+      detailLine('Type', itemType(slot, item)),
       detailLine('Item level', item.item_level ? String(item.item_level) : null),
       detailLine('Item ID', item.item_id ? String(item.item_id) : null),
       detailLine('Quality', item.item_quality !== undefined ? String(item.item_quality) : null),
@@ -247,8 +262,17 @@
   }
 
   function createItem(slot, item) {
-    var row = document.createElement('div');
+    var row = document.createElement('a');
     row.className = 'equipment-item ' + qualityClass(item);
+    row.href = itemUrl(item);
+    row.target = '_blank';
+    row.rel = 'noopener';
+    row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + (item.name || 'Unknown item'));
+    var data = wowheadData(item);
+    if (data) {
+      row.setAttribute('data-wowhead', data);
+      row.setAttribute('data-wh-rename-link', 'true');
+    }
 
     var image = document.createElement('img');
     image.src = iconUrl(item.icon);
@@ -262,28 +286,15 @@
     label.textContent = slotLabels[slot] || slot;
     row.appendChild(label);
 
-    var link = document.createElement('a');
-    link.className = 'equipment-name';
-    link.href = itemUrl(item);
-    link.target = '_blank';
-    link.rel = 'noopener';
-    link.textContent = item.name || 'Unknown item';
-    var data = wowheadData(item);
-    if (data) {
-      link.setAttribute('data-wowhead', data);
-      link.setAttribute('data-wh-rename-link', 'true');
-    }
-    row.appendChild(link);
-
     var level = document.createElement('span');
     level.className = 'equipment-ilvl';
-    level.textContent = item.item_level ? 'ilvl ' + item.item_level : 'ilvl -';
+    level.textContent = item.item_level || '-';
     row.appendChild(level);
 
     row.addEventListener('mouseenter', function () {
       showItemDetails(slot, item);
     });
-    link.addEventListener('focus', function () {
+    row.addEventListener('focus', function () {
       showItemDetails(slot, item);
     });
     return row;

@@ -16,7 +16,7 @@
 
 body {
   margin: 0;
-  min-width: 760px;
+  min-width: 540px;
   color: var(--text);
   background: var(--bg);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -48,6 +48,7 @@ button:hover,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+.equipment-item:focus-visible,
 .profile-link:focus-visible {
   outline: 3px solid rgba(37, 99, 235, 0.2);
   outline-offset: 2px;
@@ -256,9 +257,10 @@ select {
 
 .equipment-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.9fr) minmax(0, 1fr);
+  grid-template-columns: 76px minmax(260px, 1fr) 76px;
   gap: 10px;
   align-items: start;
+  justify-content: center;
 }
 
 .equipment-column {
@@ -268,19 +270,25 @@ select {
 
 .equipment-item {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
+  grid-template-columns: 44px 1fr;
+  gap: 4px 6px;
+  align-items: end;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #ffffff;
-  padding: 7px;
+  color: var(--text);
+  padding: 6px;
+  text-decoration: none;
+}
+
+.equipment-item:hover {
+  border-color: var(--accent);
 }
 
 .equipment-item img {
-  grid-row: 1 / span 3;
-  width: 38px;
-  height: 38px;
+  grid-row: 1 / span 2;
+  width: 44px;
+  height: 44px;
   border-radius: 6px;
   object-fit: cover;
 }
@@ -292,30 +300,15 @@ select {
 }
 
 .equipment-slot {
-  grid-column: 2 / 4;
-  line-height: 1;
-}
-
-.equipment-ilvl {
-  align-self: end;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.equipment-name {
-  display: inline-block;
-  min-width: 0;
   overflow: hidden;
-  color: var(--text);
-  font-weight: 800;
-  line-height: 1.15;
-  text-decoration: none;
+  line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.equipment-name:hover {
-  text-decoration: underline;
+.equipment-ilvl {
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .equipment-empty {
@@ -323,17 +316,17 @@ select {
   color: var(--muted);
 }
 
-.quality-2 .equipment-name,
+.equipment-item.quality-2,
 .equipment-detail-name.quality-2 {
   color: #1f7a32;
 }
 
-.quality-3 .equipment-name,
+.equipment-item.quality-3,
 .equipment-detail-name.quality-3 {
   color: #1d5fd1;
 }
 
-.quality-4 .equipment-name,
+.equipment-item.quality-4,
 .equipment-detail-name.quality-4 {
   color: #7a3ec8;
 }
@@ -362,8 +355,8 @@ select {
 }
 
 .equipment-detail-header img {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border: 1px solid var(--line);
   border-radius: 8px;
   object-fit: cover;
