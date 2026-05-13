@@ -421,7 +421,7 @@ select {
 .equipment-weapons {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: 44px 44px;
+  grid-template-columns: repeat(4, 44px);
   gap: 6px;
   align-items: end;
   justify-content: center;

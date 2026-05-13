@@ -415,14 +415,14 @@
     'legs',
     'feet',
     'finger1',
-    'finger2',
-    'trinket1',
-    'trinket2'
+    'finger2'
   ];
 
-  var weaponSlots = [
+  var bottomSlots = [
     'mainhand',
-    'offhand'
+    'offhand',
+    'trinket1',
+    'trinket2'
   ];
 
   function setStatus(message, isError) {
@@ -839,7 +839,7 @@
     rightSlots.forEach(function (slot) {
       equipmentRight.appendChild(createItem(slot, items[slot] || null));
     });
-    weaponSlots.forEach(function (slot) {
+    bottomSlots.forEach(function (slot) {
       equipmentWeapons.appendChild(createItem(slot, items[slot] || null));
     });
 
