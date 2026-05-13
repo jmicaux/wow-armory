@@ -249,6 +249,16 @@ select {
   gap: 8px;
 }
 
+.equipment-top {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 48px;
+  gap: 7px;
+  justify-content: start;
+  align-items: start;
+  min-height: 48px;
+}
+
 .equipment-grid {
   display: grid;
   grid-template-columns: 48px 250px 48px;
@@ -402,19 +412,12 @@ select {
 .equipment-weapons {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: 48px 250px 48px;
+  grid-template-columns: 48px 48px;
   gap: 7px;
   align-items: end;
+  justify-content: center;
   justify-items: center;
-  margin-top: -2px;
-}
-
-.equipment-weapons > .equipment-item:first-child {
-  grid-column: 1;
-}
-
-.equipment-weapons > .equipment-item:last-child {
-  grid-column: 3;
+  margin-top: 0;
 }
 
 .equipment-detail-line strong {

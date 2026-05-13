@@ -17,6 +17,7 @@
   var profileName = document.getElementById('profile-name');
   var profileMeta = document.getElementById('profile-meta');
   var profileGuild = document.getElementById('profile-guild');
+  var equipmentTop = document.getElementById('equipment-top');
   var equipmentLeft = document.getElementById('equipment-left');
   var equipmentRight = document.getElementById('equipment-right');
   var equipmentWeapons = document.getElementById('equipment-weapons');
@@ -396,9 +397,12 @@
   var slotLabels = {};
   var ui = i18n['fr-fr'];
 
-  var leftSlots = [
+  var topSlots = [
     'head',
-    'neck',
+    'neck'
+  ];
+
+  var leftSlots = [
     'shoulder',
     'back',
     'chest',
@@ -798,6 +802,7 @@
   }
 
   function renderEquipment(items) {
+    equipmentTop.textContent = '';
     equipmentLeft.textContent = '';
     equipmentRight.textContent = '';
     equipmentWeapons.textContent = '';
@@ -812,6 +817,11 @@
       return;
     }
 
+    topSlots.forEach(function (slot) {
+      if (items[slot]) {
+        equipmentTop.appendChild(createItem(slot, items[slot]));
+      }
+    });
     leftSlots.forEach(function (slot) {
       if (items[slot]) {
         equipmentLeft.appendChild(createItem(slot, items[slot]));
