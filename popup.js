@@ -556,6 +556,33 @@
     return href;
   }
 
+  function wowheadAcceptLanguage() {
+    var mapping = {
+      'en-us': 'en-US,en;q=0.9',
+      'en-gb': 'en-GB,en;q=0.9',
+      'fr-fr': 'fr-FR,fr;q=0.9',
+      'de-de': 'de-DE,de;q=0.9',
+      'es-es': 'es-ES,es;q=0.9',
+      'es-mx': 'es-MX,es;q=0.9',
+      'it-it': 'it-IT,it;q=0.9',
+      'pt-br': 'pt-BR,pt;q=0.9',
+      'ru-ru': 'ru-RU,ru;q=0.9',
+      'ko-kr': 'ko-KR,ko;q=0.9',
+      'zh-tw': 'zh-TW,zh;q=0.9'
+    };
+
+    return mapping[localeKey()] || 'en-US,en;q=0.9';
+  }
+
+  function wowheadFetchOptions() {
+    return {
+      credentials: 'omit',
+      headers: {
+        'Accept-Language': wowheadAcceptLanguage()
+      }
+    };
+  }
+
   function parseWowheadItemName(xmlText) {
     var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
     if (doc.getElementsByTagName('parsererror').length) {
@@ -645,14 +672,14 @@
       return localizedItemRequests[key];
     }
 
-    localizedItemRequests[key] = fetch(localizedItemUrl(item), { credentials: 'omit' })
+    localizedItemRequests[key] = fetch(localizedItemUrl(item), wowheadFetchOptions())
       .then(function (response) {
         return response.text();
       })
       .then(function (text) {
         var name = parseWowheadItemName(text);
         if (!name || (localeKey() !== 'en-us' && localeKey() !== 'en-gb' && item.name && name === item.name)) {
-          return fetch(localizedItemPageUrl(item), { credentials: 'omit' })
+          return fetch(localizedItemPageUrl(item), wowheadFetchOptions())
             .then(function (response) {
               return response.text();
             })
