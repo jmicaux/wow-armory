@@ -2,7 +2,7 @@ var WowArmory = (function () {
   var defaults = {
     region: 'eu',
     realm: 'archimonde',
-    character: 'Poilgrês',
+    character: 'Poilgrîs',
     locale: 'fr-fr'
   };
 
