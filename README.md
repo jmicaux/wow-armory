@@ -2,7 +2,7 @@
 
 Cross-browser WebExtension rebuild inspired by the old Netvibes WoW Armory widget.
 
-The original widget queried a now-gone PHP backend. This rebuild uses the public Raider.IO character profile API and runs as a browser extension.
+The original UWA widget disappeared with the shutdown of netvibes.com. This rebuild relies on the public Raider.IO character profile API and runs as a browser extension.
 
 ## Features
 
