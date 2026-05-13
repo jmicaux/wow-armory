@@ -399,10 +399,10 @@ select {
 
 .equipment-weapons {
   display: grid;
-  grid-column: 1 / -1;
   grid-template-columns: repeat(2, 48px);
   gap: 7px;
   justify-content: center;
+  margin-top: -4px;
 }
 
 .equipment-detail-line strong {
