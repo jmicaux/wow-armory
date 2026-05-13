@@ -425,6 +425,25 @@
     'trinket2'
   ];
 
+  var equipmentSlotOrder = [
+    'head',
+    'neck',
+    'shoulder',
+    'back',
+    'chest',
+    'wrist',
+    'hands',
+    'waist',
+    'legs',
+    'feet',
+    'finger1',
+    'finger2',
+    'mainhand',
+    'offhand',
+    'trinket1',
+    'trinket2'
+  ];
+
   function setStatus(message, isError) {
     status.textContent = message;
     status.classList.toggle('is-error', Boolean(isError));
@@ -553,11 +572,13 @@
         var name = parseWowheadItemName(text);
         localizedItemNames[key] = name || item.name || '';
         item.localized_name = localizedItemNames[key];
+        item.name = localizedItemNames[key];
         return localizedItemNames[key];
       })
       .catch(function () {
         localizedItemNames[key] = item.name || '';
         item.localized_name = localizedItemNames[key];
+        item.name = localizedItemNames[key];
         return localizedItemNames[key];
       })
       .finally(function () {
@@ -572,7 +593,7 @@
       return Promise.resolve([]);
     }
 
-    return Promise.all(Object.keys(items).map(function (slot) {
+    return Promise.all(equipmentSlotOrder.map(function (slot) {
       if (items[slot]) {
         return resolveLocalizedItemName(items[slot]);
       }
@@ -590,6 +611,24 @@
         delete items[slot].localized_name;
       }
     });
+  }
+
+  function defaultDetailSlot(items) {
+    if (!items) {
+      return null;
+    }
+
+    if (items.head) {
+      return 'head';
+    }
+
+    for (var i = 0; i < equipmentSlotOrder.length; i += 1) {
+      if (items[equipmentSlotOrder[i]]) {
+        return equipmentSlotOrder[i];
+      }
+    }
+
+    return null;
   }
 
   function currentUi() {
@@ -898,6 +937,10 @@
       equipmentWeapons.appendChild(createItem(slot, items[slot] || null));
     });
 
+    var defaultSlot = defaultDetailSlot(items);
+    if (defaultSlot && items[defaultSlot]) {
+      showItemDetails(defaultSlot, items[defaultSlot]);
+    }
   }
 
   function renderProfile(data) {
