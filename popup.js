@@ -704,6 +704,17 @@
     });
   }
 
+  function wowheadStatTone(line) {
+    var text = String(line || '').toLowerCase();
+    if (
+      /augmente votre score|increases your score|polyvalence|versatility|critique|critical strike|hâte|haste|maîtrise|mastery|speed|vitesse/.test(text)
+    ) {
+      return 'secondary';
+    }
+
+    return 'primary';
+  }
+
   function resolveLocalizedItemName(item) {
     var key = localizedItemKey(item);
     if (!item || !item.item_id) {
@@ -1078,7 +1089,7 @@
     equipmentDetail.appendChild(header);
 
     var lines = [
-      detailLine(ui.itemLevel, item.item_level ? String(item.item_level) : null),
+      detailLine('Ilvl', item.item_level ? String(item.item_level) : null),
       detailLine(ui.enchantsGems, details.length ? details.join(' · ') : null),
     ].filter(Boolean);
 
@@ -1105,7 +1116,7 @@
       lines.forEach(function (line) {
         var row = document.createElement('div');
         var statMatch = String(line || '').match(/^\+(\d+)\s+(.+)$/);
-        row.className = 'equipment-wowhead-stat';
+        row.className = 'equipment-wowhead-stat equipment-wowhead-stat-' + wowheadStatTone(line);
 
         if (statMatch) {
           var amount = document.createElement('strong');

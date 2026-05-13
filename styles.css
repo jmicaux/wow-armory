@@ -508,10 +508,11 @@ select {
 
 .equipment-wowhead-stats {
   display: grid;
-  gap: 6px;
-  margin-top: 2px;
-  padding-top: 6px;
-  border-top: 1px solid var(--line);
+  gap: 0;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: #071329;
+  overflow: hidden;
 }
 
 .equipment-wowhead-stats.is-hidden {
@@ -520,31 +521,38 @@ select {
 
 .equipment-wowhead-stat {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
   align-items: baseline;
   margin: 0;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 6px 8px;
-  color: var(--text);
+  padding: 7px 10px;
+  background: transparent;
 }
 
 .equipment-wowhead-stat-amount {
-  color: var(--accent);
-  font-size: 0.88rem;
-  font-weight: 800;
-  line-height: 1.2;
+  color: #f3f6ff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .equipment-wowhead-stat-label {
-  color: var(--text);
-  font-size: 0.8rem;
-  line-height: 1.25;
+  color: #f3f6ff;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .equipment-wowhead-stat-label-full {
   width: 100%;
+}
+
+.equipment-wowhead-stat-primary .equipment-wowhead-stat-amount,
+.equipment-wowhead-stat-primary .equipment-wowhead-stat-label {
+  color: #f3f6ff;
+}
+
+.equipment-wowhead-stat-secondary .equipment-wowhead-stat-amount,
+.equipment-wowhead-stat-secondary .equipment-wowhead-stat-label {
+  color: #7aff3f;
 }
 
 .equipment-weapons {
