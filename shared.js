@@ -2,8 +2,23 @@ var WowArmory = (function () {
   var defaults = {
     region: 'eu',
     realm: 'archimonde',
-    character: 'Poilgrês'
+    character: 'Poilgrês',
+    locale: 'fr-fr'
   };
+
+  var supportedLocales = [
+    'en-us',
+    'en-gb',
+    'fr-fr',
+    'de-de',
+    'es-es',
+    'es-mx',
+    'it-it',
+    'pt-br',
+    'ru-ru',
+    'ko-kr',
+    'zh-tw'
+  ];
 
   function cleanSlug(value) {
     return String(value || '').trim().toLowerCase().replace(/\s+/g, '-');
@@ -13,12 +28,18 @@ var WowArmory = (function () {
     return String(value || '').trim();
   }
 
+  function cleanLocale(value) {
+    var locale = String(value || '').trim().toLowerCase();
+    return supportedLocales.indexOf(locale) >= 0 ? locale : defaults.locale;
+  }
+
   function getSettings() {
     return browser.storage.sync.get(defaults).then(function (settings) {
       return {
         region: settings.region || defaults.region,
         realm: cleanSlug(settings.realm || defaults.realm),
-        character: cleanName(settings.character || defaults.character)
+        character: cleanName(settings.character || defaults.character),
+        locale: cleanLocale(settings.locale || defaults.locale)
       };
     });
   }
@@ -27,7 +48,8 @@ var WowArmory = (function () {
     return browser.storage.sync.set({
       region: settings.region,
       realm: cleanSlug(settings.realm),
-      character: cleanName(settings.character)
+      character: cleanName(settings.character),
+      locale: cleanLocale(settings.locale || defaults.locale)
     });
   }
 
@@ -49,7 +71,7 @@ var WowArmory = (function () {
 
   function officialProfileUrl(settings) {
     return [
-      'https://worldofwarcraft.blizzard.com/fr-fr/character',
+      'https://worldofwarcraft.blizzard.com/' + cleanLocale(settings.locale) + '/character',
       encodeURIComponent(settings.region),
       encodeURIComponent(cleanSlug(settings.realm)),
       encodeURIComponent(cleanName(settings.character))
@@ -75,10 +97,10 @@ var WowArmory = (function () {
     defaults: defaults,
     cleanSlug: cleanSlug,
     cleanName: cleanName,
+    cleanLocale: cleanLocale,
     getSettings: getSettings,
     saveSettings: saveSettings,
-    loadCharacter: loadCharacter
-    ,
+    loadCharacter: loadCharacter,
     officialProfileUrl: officialProfileUrl
   };
 }());

@@ -26,6 +26,7 @@
   var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
+  var activeSettings = WowArmory.defaults;
 
   var slotLabels = {
     head: 'Head',
@@ -80,7 +81,8 @@
     return {
       region: region.value,
       realm: realm.value,
-      character: character.value
+      character: character.value,
+      locale: activeSettings.locale
     };
   }
 
@@ -350,7 +352,8 @@
     officialLink.href = WowArmory.officialProfileUrl({
       region: data.region || currentSettings().region,
       realm: data.realm || currentSettings().realm,
-      character: data.name || currentSettings().character
+      character: data.name || currentSettings().character,
+      locale: currentSettings().locale
     });
   }
 
@@ -367,7 +370,8 @@
     var cleanSettings = {
       region: settings.region,
       realm: WowArmory.cleanSlug(settings.realm),
-      character: WowArmory.cleanName(settings.character)
+      character: WowArmory.cleanName(settings.character),
+      locale: WowArmory.cleanLocale(settings.locale)
     };
 
     if (!cleanSettings.realm || !cleanSettings.character) {
@@ -376,6 +380,7 @@
     }
 
     fillForm(cleanSettings);
+    activeSettings = cleanSettings;
     setStatus('Loading character...');
     status.classList.remove('is-hidden');
     profile.classList.add('is-hidden');
@@ -433,6 +438,7 @@
   });
 
   WowArmory.getSettings().then(function (settings) {
+    activeSettings = settings;
     fillForm(settings);
     load(settings);
   });
