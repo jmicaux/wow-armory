@@ -6,8 +6,10 @@
   var character = document.getElementById('character');
   var status = document.getElementById('status');
   var menuButton = document.getElementById('menu-button');
+  var popupMenu = document.getElementById('popup-menu');
+  var menuCharacter = document.getElementById('menu-character');
+  var menuOptions = document.getElementById('menu-options');
   var refreshButton = document.getElementById('refresh-button');
-  var optionsButton = document.getElementById('options-button');
   var profile = document.getElementById('profile');
   var fallbackProfile = document.getElementById('fallback-profile');
   var fallbackName = document.getElementById('fallback-name');
@@ -90,7 +92,7 @@
   }
 
   function setMenuOpen(isOpen) {
-    form.classList.toggle('is-open', isOpen);
+    popupMenu.classList.toggle('is-hidden', !isOpen);
     menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   }
 
@@ -403,21 +405,21 @@
   });
 
   menuButton.addEventListener('click', function () {
-    setMenuOpen(!form.classList.contains('is-open'));
+    setMenuOpen(popupMenu.classList.contains('is-hidden'));
   });
 
   document.addEventListener('click', function (event) {
-    if (!popup.classList.contains('has-character') || !form.classList.contains('is-open')) {
+    if (popupMenu.classList.contains('is-hidden')) {
       return;
     }
 
-    if (!form.contains(event.target) && !menuButton.contains(event.target)) {
+    if (!popupMenu.contains(event.target) && !menuButton.contains(event.target)) {
       setMenuOpen(false);
     }
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && form.classList.contains('is-open')) {
+    if (event.key === 'Escape' && !popupMenu.classList.contains('is-hidden')) {
       setMenuOpen(false);
       menuButton.focus();
     }
@@ -427,7 +429,14 @@
     load(currentSettings());
   });
 
-  optionsButton.addEventListener('click', function () {
+  menuCharacter.addEventListener('click', function () {
+    setMenuOpen(false);
+    form.classList.add('is-open');
+    menuButton.setAttribute('aria-expanded', 'true');
+  });
+
+  menuOptions.addEventListener('click', function () {
+    setMenuOpen(false);
     browser.runtime.openOptionsPage();
   });
 

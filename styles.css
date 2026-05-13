@@ -80,6 +80,7 @@ select:focus-visible,
 }
 
 .header-actions {
+  position: relative;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -106,6 +107,28 @@ select:focus-visible,
 
 .has-character .menu-toggle {
   display: inline-flex;
+}
+
+.popup-menu {
+  position: absolute;
+  top: 46px;
+  right: 48px;
+  z-index: 12;
+  display: grid;
+  gap: 6px;
+  min-width: 168px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(31, 41, 51, 0.14);
+  padding: 8px;
+}
+
+.popup-menu button {
+  width: 100%;
+  justify-content: flex-start;
+  background: #ffffff;
+  padding: 0 10px;
 }
 
 .eyebrow {
