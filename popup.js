@@ -539,7 +539,7 @@
     if (path) {
       base += path + '/';
     }
-    return base + 'item=' + encodeURIComponent(item.item_id) + '&xml';
+    return base + '?item=' + encodeURIComponent(item.item_id) + '&xml';
   }
 
   function localizedItemPageUrl(item) {
