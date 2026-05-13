@@ -844,7 +844,6 @@
       data.faction
     ].filter(Boolean).join(' · ');
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
-    renderEquipment(data.gear && data.gear.items);
     profileLink.href = data.profile_url || '#';
     profileLink.textContent = ui.openRaidio;
     officialLink.href = WowArmory.officialProfileUrl({
@@ -854,7 +853,10 @@
       locale: currentSettings().locale
     });
     officialLink.textContent = ui.openOfficial;
-    return primeLocalizedItemNames(data.gear && data.gear.items);
+    return primeLocalizedItemNames(data.gear && data.gear.items).then(function () {
+      renderEquipment(data.gear && data.gear.items);
+      return data;
+    });
   }
 
   function renderFallback(settings, message) {
