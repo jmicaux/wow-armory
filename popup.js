@@ -675,12 +675,25 @@
     var wrapper = document.createElement('div');
     wrapper.innerHTML = html;
 
+    var seen = {};
     var rows = [];
-    wrapper.querySelectorAll('tr').forEach(function (tr) {
-      var text = decodeWowheadText(String(tr.textContent || '').replace(/\s+/g, ' ').trim());
-      if (text) {
-        rows.push(text);
+
+    function pushLine(text) {
+      var line = decodeWowheadText(String(text || '').replace(/\s+/g, ' ').trim());
+      if (!line || seen[line]) {
+        return;
       }
+      seen[line] = true;
+      rows.push(line);
+    }
+
+    var innerText = String(wrapper.innerText || wrapper.textContent || '');
+    innerText.split(/\r?\n/).forEach(function (line) {
+      pushLine(line);
+    });
+
+    wrapper.querySelectorAll('tr').forEach(function (tr) {
+      pushLine(tr.textContent || '');
     });
 
     return rows;
