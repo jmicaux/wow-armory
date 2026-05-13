@@ -579,24 +579,44 @@
       .trim();
   }
 
+  function decodeWowheadText(value) {
+    var text = String(value || '');
+
+    text = text.replace(/\\u([0-9a-fA-F]{4})/g, function (_, hex) {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+
+    text = text.replace(/\\x([0-9a-fA-F]{2})/g, function (_, hex) {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+
+    text = text.replace(/\\'/g, "'");
+    text = text.replace(/\\"/g, '"');
+    text = text.replace(/\\\\/g, '\\');
+
+    var textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  }
+
   function parseWowheadItemNameFromPage(htmlText) {
     var h1Match = String(htmlText || '').match(/<h1[^>]*class=["'][^"']*(?:heading-size-1|heading-title|item-name)[^"']*["'][^>]*>([^<]+)<\/h1>/i);
     if (h1Match && h1Match[1]) {
-      return cleanWowheadPageTitle(h1Match[1]);
+      return cleanWowheadPageTitle(decodeWowheadText(h1Match[1]));
     }
 
     var dataNameMatch = String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i);
     if (dataNameMatch && dataNameMatch[1]) {
-      return cleanWowheadPageTitle(dataNameMatch[1]);
+      return cleanWowheadPageTitle(decodeWowheadText(dataNameMatch[1]));
     }
 
     var titleMatch = String(htmlText || '').match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
     if (titleMatch && titleMatch[1]) {
-      return cleanWowheadPageTitle(titleMatch[1]);
+      return cleanWowheadPageTitle(decodeWowheadText(titleMatch[1]));
     }
 
     var pageTitleMatch = String(htmlText || '').match(/<title>([^<]+)<\/title>/i);
-    return pageTitleMatch && pageTitleMatch[1] ? cleanWowheadPageTitle(pageTitleMatch[1]) : null;
+    return pageTitleMatch && pageTitleMatch[1] ? cleanWowheadPageTitle(decodeWowheadText(pageTitleMatch[1])) : null;
   }
 
   function resolveLocalizedItemName(item) {
@@ -626,7 +646,7 @@
             })
             .then(function (pageText) {
               var pageName = parseWowheadItemNameFromPage(pageText);
-              localizedItemNames[key] = pageName || name || item.name || '';
+              localizedItemNames[key] = decodeWowheadText(pageName || name || item.name || '');
               localizedItemResolved[key] = Boolean(localizedItemNames[key]);
               item.localized_name = localizedItemNames[key];
               item.name = localizedItemNames[key];
@@ -634,7 +654,7 @@
             });
         }
 
-        localizedItemNames[key] = name || item.name || '';
+        localizedItemNames[key] = decodeWowheadText(name || item.name || '');
         localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
@@ -642,7 +662,7 @@
       })
       .catch(function () {
         if (localeKey() === 'en-us' || localeKey() === 'en-gb') {
-          localizedItemNames[key] = item.name || '';
+          localizedItemNames[key] = decodeWowheadText(item.name || '');
           localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         }
         item.localized_name = localizedItemNames[key];
