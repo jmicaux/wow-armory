@@ -701,7 +701,11 @@
 
   function wowheadStatLines(tooltipLines) {
     return (tooltipLines || []).filter(function (line) {
-      return /^\+/.test(line) || /augmente votre score/i.test(line) || /increases your score/i.test(line);
+      return (
+        (/^\+/.test(line) && !/requis|prix de vente/i.test(line)) ||
+        /augmente votre score/i.test(line) ||
+        /increases your score/i.test(line)
+      );
     });
   }
 
@@ -1081,10 +1085,7 @@
     var lines = [
       detailLine(ui.type, itemType(slot, item)),
       detailLine(ui.itemLevel, item.item_level ? String(item.item_level) : null),
-      detailLine(ui.itemId, item.item_id ? String(item.item_id) : null),
-      detailLine(ui.quality, item.item_quality !== undefined ? String(item.item_quality) : null),
       detailLine(ui.enchantsGems, details.length ? details.join(' · ') : null),
-      detailLine(ui.bonuses, Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(', ') : null)
     ].filter(Boolean);
 
     var list = document.createElement('div');
@@ -1108,9 +1109,28 @@
 
       statsBlock.classList.remove('is-hidden');
       lines.forEach(function (line) {
-        var row = document.createElement('p');
+        var row = document.createElement('div');
+        var statMatch = String(line || '').match(/^\+(\d+)\s+(.+)$/);
         row.className = 'equipment-wowhead-stat';
-        row.textContent = line;
+
+        if (statMatch) {
+          var amount = document.createElement('strong');
+          amount.className = 'equipment-wowhead-stat-amount';
+          amount.textContent = '+' + statMatch[1];
+          row.appendChild(amount);
+
+          var label = document.createElement('span');
+          label.className = 'equipment-wowhead-stat-label';
+          label.textContent = statMatch[2];
+          row.appendChild(label);
+          statsBlock.appendChild(row);
+          return;
+        }
+
+        var labelOnly = document.createElement('span');
+        labelOnly.className = 'equipment-wowhead-stat-label equipment-wowhead-stat-label-full';
+        labelOnly.textContent = line;
+        row.appendChild(labelOnly);
         statsBlock.appendChild(row);
       });
     }
