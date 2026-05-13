@@ -738,7 +738,6 @@
     form.querySelectorAll('label span')[1].textContent = ui.region;
     form.querySelectorAll('label span')[2].textContent = ui.realm;
     form.querySelectorAll('label span')[3].textContent = ui.character;
-    setIconLabel(form.querySelector('button[type="submit"]'), '↦', ui.load);
     document.querySelector('.status').textContent = ui.statusIdle;
     setIconLink(document.querySelector('#profile-link'), 'assets/raiderio_favicon.ico', ui.openRaidio);
     setIconLink(document.querySelector('#official-link'), officialFaviconUrl, ui.openOfficial);
