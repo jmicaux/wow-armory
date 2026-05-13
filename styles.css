@@ -16,9 +16,9 @@
 
 body {
   margin: 0;
-  width: 440px;
-  min-width: 440px;
-  max-width: 440px;
+  width: 420px;
+  min-width: 420px;
+  max-width: 420px;
   color: var(--text);
   background: var(--bg);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -58,12 +58,12 @@ select:focus-visible,
 
 .popup,
 .options-page {
-  padding: 16px;
+  padding: 12px;
 }
 
 .popup {
   position: relative;
-  width: 440px;
+  width: 420px;
 }
 
 .options-page {
@@ -76,7 +76,7 @@ select:focus-visible,
   justify-content: space-between;
   gap: 14px;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .header-actions {
@@ -125,7 +125,7 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: 1.35rem;
+  font-size: 1.24rem;
   line-height: 1.1;
 }
 
@@ -146,11 +146,11 @@ h3 {
 .options-form,
 .profile {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 12px;
+  padding: 10px;
 }
 
 .has-character .character-form {
@@ -209,8 +209,8 @@ select {
 }
 
 .profile-main img {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border: 1px solid var(--line);
   border-radius: 8px;
   object-fit: cover;
@@ -229,7 +229,7 @@ select {
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 6px;
   margin: 0;
 }
 
@@ -237,7 +237,7 @@ select {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--soft);
-  padding: 8px;
+  padding: 6px;
 }
 
 .stats dt {
@@ -247,8 +247,8 @@ select {
 }
 
 .stats dd {
-  margin: 4px 0 0;
-  font-size: 1rem;
+  margin: 2px 0 0;
+  font-size: 0.95rem;
   font-weight: 800;
 }
 
@@ -266,32 +266,33 @@ select {
 
 .equipment {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .equipment-grid {
   display: grid;
-  grid-template-columns: 58px 250px 58px;
-  gap: 10px;
+  grid-template-columns: 48px 250px 48px;
+  gap: 7px;
   align-items: start;
   justify-content: center;
 }
 
 .equipment-column {
   display: grid;
-  gap: 7px;
+  gap: 4px;
 }
 
 .equipment-item {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 3px;
+  gap: 2px;
   justify-items: center;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #ffffff;
   color: var(--text);
-  padding: 5px;
+  min-height: 43px;
+  padding: 3px;
   text-decoration: none;
 }
 
@@ -300,16 +301,14 @@ select {
 }
 
 .equipment-item img {
-  width: 46px;
-  height: 46px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
   object-fit: cover;
 }
 
-.equipment-slot,
-.equipment-ilvl {
+.equipment-slot {
   color: var(--muted);
-  font-size: 0.72rem;
 }
 
 .equipment-slot {
@@ -317,19 +316,12 @@ select {
   max-width: 100%;
   overflow: hidden;
   color: var(--muted);
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   line-height: 1;
   text-overflow: ellipsis;
   text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.equipment-ilvl {
-  color: var(--text);
-  font-size: 0.74rem;
-  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -357,13 +349,13 @@ select {
   position: sticky;
   top: 8px;
   display: grid;
-  gap: 10px;
-  grid-template-rows: 76px minmax(132px, 1fr) auto;
-  min-height: 294px;
+  gap: 8px;
+  grid-template-rows: 62px minmax(112px, 1fr) auto;
+  min-height: 246px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--soft);
-  padding: 12px;
+  padding: 10px;
 }
 
 .equipment-detail-empty {
@@ -386,15 +378,15 @@ select {
 }
 
 .equipment-detail-header img {
-  width: 64px;
-  height: 64px;
+  width: 52px;
+  height: 52px;
   border: 1px solid var(--line);
   border-radius: 8px;
   object-fit: cover;
 }
 
 .equipment-detail-slot {
-  margin: 0 0 4px;
+  margin: 0 0 3px;
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 800;
@@ -405,7 +397,7 @@ select {
   display: -webkit-box;
   overflow: hidden;
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.93rem;
   line-height: 1.15;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -413,17 +405,25 @@ select {
 
 .equipment-detail-lines {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .equipment-detail-line {
   display: grid;
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 8px;
   border-top: 1px solid var(--line);
-  padding-top: 6px;
+  padding-top: 4px;
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.equipment-weapons {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, 48px);
+  gap: 7px;
+  justify-content: center;
 }
 
 .equipment-detail-line strong {
@@ -449,7 +449,7 @@ select {
 .popup-footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .popup-footer button {

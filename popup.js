@@ -22,6 +22,7 @@
   var mplusScore = document.getElementById('mplus-score');
   var equipmentLeft = document.getElementById('equipment-left');
   var equipmentRight = document.getElementById('equipment-right');
+  var equipmentWeapons = document.getElementById('equipment-weapons');
   var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
@@ -62,7 +63,10 @@
     'finger1',
     'finger2',
     'trinket1',
-    'trinket2',
+    'trinket2'
+  ];
+
+  var weaponSlots = [
     'mainhand',
     'offhand'
   ];
@@ -286,11 +290,6 @@
     label.textContent = slotLabels[slot] || slot;
     row.appendChild(label);
 
-    var level = document.createElement('span');
-    level.className = 'equipment-ilvl';
-    level.textContent = item.item_level || '-';
-    row.appendChild(level);
-
     row.addEventListener('mouseenter', function () {
       showItemDetails(slot, item);
     });
@@ -303,6 +302,7 @@
   function renderEquipment(items) {
     equipmentLeft.textContent = '';
     equipmentRight.textContent = '';
+    equipmentWeapons.textContent = '';
     clearDetail();
 
     if (!items) {
@@ -322,6 +322,11 @@
     rightSlots.forEach(function (slot) {
       if (items[slot]) {
         equipmentRight.appendChild(createItem(slot, items[slot]));
+      }
+    });
+    weaponSlots.forEach(function (slot) {
+      if (items[slot]) {
+        equipmentWeapons.appendChild(createItem(slot, items[slot]));
       }
     });
   }
