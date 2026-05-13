@@ -541,6 +541,15 @@
     return base + 'item=' + encodeURIComponent(item.item_id) + '&xml';
   }
 
+  function localizedItemPageUrl(item) {
+    var path = wowheadLocalePath();
+    var base = 'https://www.wowhead.com/';
+    if (path) {
+      base += path + '/';
+    }
+    return base + 'item=' + encodeURIComponent(item.item_id);
+  }
+
   function parseWowheadItemName(xmlText) {
     var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
     if (doc.getElementsByTagName('parsererror').length) {
@@ -549,6 +558,24 @@
 
     var nameNode = doc.getElementsByTagName('name')[0];
     return nameNode ? String(nameNode.textContent || '').trim() : null;
+  }
+
+  function cleanWowheadPageTitle(titleText) {
+    return String(titleText || '')
+      .replace(/\s*-\s*Item\s*-\s*World of Warcraft.*$/i, '')
+      .replace(/\s*-\s*Objet\s*-\s*World of Warcraft.*$/i, '')
+      .replace(/\s*-\s*Objet\s*-\s*World of Warcraft.*$/i, '')
+      .trim();
+  }
+
+  function parseWowheadItemNameFromPage(htmlText) {
+    var titleMatch = String(htmlText || '').match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+    if (titleMatch && titleMatch[1]) {
+      return cleanWowheadPageTitle(titleMatch[1]);
+    }
+
+    var pageTitleMatch = String(htmlText || '').match(/<title>([^<]+)<\/title>/i);
+    return pageTitleMatch && pageTitleMatch[1] ? cleanWowheadPageTitle(pageTitleMatch[1]) : null;
   }
 
   function resolveLocalizedItemName(item) {
@@ -571,6 +598,20 @@
       })
       .then(function (text) {
         var name = parseWowheadItemName(text);
+        if (!name || (localeKey() !== 'en-us' && localeKey() !== 'en-gb' && item.name && name === item.name)) {
+          return fetch(localizedItemPageUrl(item), { credentials: 'omit' })
+            .then(function (response) {
+              return response.text();
+            })
+            .then(function (pageText) {
+              var pageName = parseWowheadItemNameFromPage(pageText);
+              localizedItemNames[key] = pageName || name || item.name || '';
+              item.localized_name = localizedItemNames[key];
+              item.name = localizedItemNames[key];
+              return localizedItemNames[key];
+            });
+        }
+
         localizedItemNames[key] = name || item.name || '';
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
@@ -732,12 +773,52 @@
     return value.name || value.display_string || value.type || value.id || '';
   }
 
+  function localizedItemSlug(item) {
+    var key = item && item.item_id ? localizedItemKey(item) : '';
+    var name = (item && item.localized_name) || (key && localizedItemNames[key]) || (item && item.name) || '';
+    return name
+      ? String(name)
+        .trim()
+        .toLowerCase()
+        .replace(/[’']/g, '')
+        .replace(/[^a-z0-9\u00c0-\u017f]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+      : '';
+  }
+
   function itemType(slot, item) {
     return detailValue(item.item_subclass || item.item_class || item.item_type || item.inventory_type) || slotLabels[slot] || slot;
   }
 
   function itemUrl(item) {
-    return item && item.item_id ? 'https://www.wowhead.com/item=' + encodeURIComponent(item.item_id) : '#';
+    if (!item || !item.item_id) {
+      return '#';
+    }
+
+    var base = 'https://www.wowhead.com/';
+    var path = wowheadLocalePath();
+    if (path) {
+      base += path + '/';
+    }
+
+    var href = base + 'item=' + encodeURIComponent(item.item_id);
+    var slug = localizedItemSlug(item);
+    if (slug) {
+      href += '/' + encodeURIComponent(slug);
+    }
+
+    var params = [];
+    if (Array.isArray(item.bonuses) && item.bonuses.length) {
+      params.push('bonus=' + item.bonuses.join(':'));
+    }
+    if (Array.isArray(item.gems) && item.gems.length) {
+      params.push('gems=' + item.gems.join(':'));
+    }
+    if (Array.isArray(item.enchants) && item.enchants.length) {
+      params.push('ench=' + item.enchants[0]);
+    }
+
+    return params.length ? href + '?' + params.join('&') : href;
   }
 
   function wowheadData(item) {
