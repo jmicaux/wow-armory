@@ -231,30 +231,6 @@ select {
   white-space: nowrap;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin: 0;
-}
-
-.stats div {
-  border-top: 1px solid var(--line);
-  padding: 6px 0 0;
-}
-
-.stats dt {
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.stats dd {
-  margin: 2px 0 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-
 .profile-link {
   display: inline-flex;
   align-items: center;

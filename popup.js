@@ -17,9 +17,6 @@
   var profileName = document.getElementById('profile-name');
   var profileMeta = document.getElementById('profile-meta');
   var profileGuild = document.getElementById('profile-guild');
-  var itemLevel = document.getElementById('item-level');
-  var achievements = document.getElementById('achievements');
-  var mplusScore = document.getElementById('mplus-score');
   var equipmentLeft = document.getElementById('equipment-left');
   var equipmentRight = document.getElementById('equipment-right');
   var equipmentWeapons = document.getElementById('equipment-weapons');
@@ -344,9 +341,6 @@
       data.faction
     ].filter(Boolean).join(' · ');
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
-    itemLevel.textContent = data.gear && data.gear.item_level_equipped ? data.gear.item_level_equipped : '-';
-    achievements.textContent = data.achievement_points || '-';
-    mplusScore.textContent = getScore(data);
     renderEquipment(data.gear && data.gear.items);
     profileLink.href = data.profile_url || '#';
     officialLink.href = WowArmory.officialProfileUrl({
