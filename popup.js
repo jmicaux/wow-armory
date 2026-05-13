@@ -26,6 +26,9 @@
   var lastProfileData = null;
   var lastFallbackSettings = null;
   var lastFallbackMessage = '';
+  var localizedItemNames = {};
+  var localizedItemRequests = {};
+  var activeDetailItemKey = '';
 
   var i18n = {
     'en-us': {
@@ -427,6 +430,93 @@
     return WowArmory.cleanLocale(locale.value);
   }
 
+  function wowheadLocalePath() {
+    var mapping = {
+      'en-us': '',
+      'en-gb': '',
+      'fr-fr': 'fr',
+      'de-de': 'de',
+      'es-es': 'es',
+      'es-mx': 'es',
+      'it-it': 'it',
+      'pt-br': 'pt',
+      'ru-ru': 'ru',
+      'ko-kr': 'kr',
+      'zh-tw': 'tw'
+    };
+
+    return mapping[localeKey()] || '';
+  }
+
+  function localizedItemKey(item) {
+    return localeKey() + ':' + item.item_id;
+  }
+
+  function localizedItemUrl(item) {
+    var path = wowheadLocalePath();
+    var base = 'https://www.wowhead.com/';
+    if (path) {
+      base += path + '/';
+    }
+    return base + 'item=' + encodeURIComponent(item.item_id) + '&xml';
+  }
+
+  function parseWowheadItemName(xmlText) {
+    var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+    if (doc.getElementsByTagName('parsererror').length) {
+      return null;
+    }
+
+    var nameNode = doc.getElementsByTagName('name')[0];
+    return nameNode ? String(nameNode.textContent || '').trim() : null;
+  }
+
+  function resolveLocalizedItemName(item) {
+    var key = localizedItemKey(item);
+    if (!item || !item.item_id) {
+      return Promise.resolve(item && item.name ? item.name : '');
+    }
+
+    if (localizedItemNames[key]) {
+      return Promise.resolve(localizedItemNames[key]);
+    }
+
+    if (localizedItemRequests[key]) {
+      return localizedItemRequests[key];
+    }
+
+    localizedItemRequests[key] = fetch(localizedItemUrl(item), { credentials: 'omit' })
+      .then(function (response) {
+        return response.text();
+      })
+      .then(function (text) {
+        var name = parseWowheadItemName(text);
+        localizedItemNames[key] = name || item.name || '';
+        return localizedItemNames[key];
+      })
+      .catch(function () {
+        localizedItemNames[key] = item.name || '';
+        return localizedItemNames[key];
+      })
+      .finally(function () {
+        delete localizedItemRequests[key];
+      });
+
+    return localizedItemRequests[key];
+  }
+
+  function primeLocalizedItemNames(items) {
+    if (!items) {
+      return;
+    }
+
+    Object.keys(items).forEach(function (slot) {
+      if (items[slot]) {
+        resolveLocalizedItemName(items[slot]);
+      }
+    });
+  }
+
   function currentUi() {
     return i18n[localeKey()] || i18n['en-us'];
   }
@@ -452,6 +542,11 @@
     document.querySelector('#fallback-official-link').textContent = ui.openOfficial;
     document.querySelector('#fallback-profile .eyebrow').textContent = ui.officialArmory;
     document.querySelector('#fallback-profile p:last-of-type').textContent = ui.fallbackText;
+  }
+
+  function itemDisplayName(item) {
+    var key = item && item.item_id ? localizedItemKey(item) : '';
+    return (key && localizedItemNames[key]) || (item && item.name) || 'Unknown item';
   }
 
   function currentSettings() {
@@ -588,6 +683,7 @@
 
   function showItemDetails(slot, item) {
     var details = detailNames(item.enchants_detail).concat(detailNames(item.gems_detail));
+    activeDetailItemKey = localizedItemKey(item);
     equipmentDetail.textContent = '';
 
     var header = document.createElement('div');
@@ -609,7 +705,7 @@
 
     var title = document.createElement('h4');
     title.className = 'equipment-detail-name ' + qualityClass(item);
-    title.textContent = item.name || 'Unknown item';
+    title.textContent = itemDisplayName(item);
     intro.appendChild(title);
 
     header.appendChild(intro);
@@ -643,6 +739,12 @@
       link.setAttribute('data-wh-rename-link', 'true');
     }
     equipmentDetail.appendChild(link);
+
+    resolveLocalizedItemName(item).then(function (name) {
+      if (activeDetailItemKey === localizedItemKey(item) && name) {
+        title.textContent = name;
+      }
+    });
   }
 
   function createItem(slot, item) {
@@ -652,6 +754,7 @@
     row.target = '_blank';
     row.rel = 'noopener';
     row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + (item.name || 'Unknown item'));
+    row.title = itemDisplayName(item);
     var data = wowheadData(item);
     if (data) {
       row.setAttribute('data-wowhead', data);
@@ -709,6 +812,8 @@
         equipmentWeapons.appendChild(createItem(slot, items[slot]));
       }
     });
+
+    primeLocalizedItemNames(items);
   }
 
   function renderProfile(data) {
@@ -823,6 +928,8 @@
   });
 
   locale.addEventListener('change', function () {
+    localizedItemNames = {};
+    localizedItemRequests = {};
     applyLocale();
     if (lastProfileData && !profile.classList.contains('is-hidden')) {
       renderProfile(lastProfileData);

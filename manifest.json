@@ -21,7 +21,8 @@
     "storage"
   ],
   "host_permissions": [
-    "https://raider.io/*"
+    "https://raider.io/*",
+    "https://www.wowhead.com/*"
   ],
   "browser_specific_settings": {
     "gecko": {
