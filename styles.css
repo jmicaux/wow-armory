@@ -251,12 +251,11 @@ select {
 
 .equipment-top {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 48px;
+  grid-template-columns: 96px 48px;
   gap: 7px;
   justify-content: start;
-  align-items: start;
-  min-height: 48px;
+  align-items: end;
+  min-height: 96px;
 }
 
 .equipment-grid {
@@ -285,6 +284,21 @@ select {
   min-height: 43px;
   padding: 3px;
   text-decoration: none;
+}
+
+.equipment-item.is-empty {
+  background: #fafbfc;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.equipment-top .equipment-item:first-child {
+  min-height: 96px;
+}
+
+.equipment-top .equipment-item:first-child img {
+  width: 88px;
+  height: 88px;
 }
 
 .equipment-item:hover {

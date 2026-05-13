@@ -767,21 +767,32 @@
   }
 
   function createItem(slot, item) {
-    var row = document.createElement('a');
-    row.className = 'equipment-item ' + qualityClass(item);
-    row.href = itemUrl(item);
-    row.target = '_blank';
-    row.rel = 'noopener';
-    row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + itemDisplayName(item));
-    row.title = itemDisplayName(item);
-    var data = wowheadData(item);
-    if (data) {
-      row.setAttribute('data-wowhead', data);
-      row.setAttribute('data-wh-rename-link', 'true');
+    var row;
+
+    if (item) {
+      row = document.createElement('a');
+      row.href = itemUrl(item);
+      row.target = '_blank';
+      row.rel = 'noopener';
+      row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + itemDisplayName(item));
+      row.title = itemDisplayName(item);
+      var data = wowheadData(item);
+      if (data) {
+        row.setAttribute('data-wowhead', data);
+        row.setAttribute('data-wh-rename-link', 'true');
+      }
+    } else {
+      row = document.createElement('div');
+      row.setAttribute('aria-label', slotLabels[slot] || slot);
+      row.title = slotLabels[slot] || slot;
+      row.classList.add('is-empty');
     }
 
+    row.classList.add('equipment-item');
+    row.classList.add(qualityClass(item || {}));
+
     var image = document.createElement('img');
-    image.src = iconUrl(item.icon);
+    image.src = item ? iconUrl(item.icon) : 'assets/icon-48.png';
     image.alt = '';
     image.width = 40;
     image.height = 40;
@@ -792,12 +803,14 @@
     label.textContent = slotLabels[slot] || slot;
     row.appendChild(label);
 
-    row.addEventListener('mouseenter', function () {
-      showItemDetails(slot, item);
-    });
-    row.addEventListener('focus', function () {
-      showItemDetails(slot, item);
-    });
+    if (item) {
+      row.addEventListener('mouseenter', function () {
+        showItemDetails(slot, item);
+      });
+      row.addEventListener('focus', function () {
+        showItemDetails(slot, item);
+      });
+    }
     return row;
   }
 
@@ -818,24 +831,16 @@
     }
 
     topSlots.forEach(function (slot) {
-      if (items[slot]) {
-        equipmentTop.appendChild(createItem(slot, items[slot]));
-      }
+      equipmentTop.appendChild(createItem(slot, items[slot] || null));
     });
     leftSlots.forEach(function (slot) {
-      if (items[slot]) {
-        equipmentLeft.appendChild(createItem(slot, items[slot]));
-      }
+      equipmentLeft.appendChild(createItem(slot, items[slot] || null));
     });
     rightSlots.forEach(function (slot) {
-      if (items[slot]) {
-        equipmentRight.appendChild(createItem(slot, items[slot]));
-      }
+      equipmentRight.appendChild(createItem(slot, items[slot] || null));
     });
     weaponSlots.forEach(function (slot) {
-      if (items[slot]) {
-        equipmentWeapons.appendChild(createItem(slot, items[slot]));
-      }
+      equipmentWeapons.appendChild(createItem(slot, items[slot] || null));
     });
 
   }
