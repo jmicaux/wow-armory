@@ -687,13 +687,8 @@
       rows.push(line);
     }
 
-    var innerText = String(wrapper.innerText || wrapper.textContent || '');
-    innerText.split(/\r?\n/).forEach(function (line) {
-      pushLine(line);
-    });
-
-    wrapper.querySelectorAll('tr').forEach(function (tr) {
-      pushLine(tr.textContent || '');
+    wrapper.querySelectorAll('span').forEach(function (span) {
+      pushLine(span.textContent || '');
     });
 
     return rows;
@@ -1083,7 +1078,6 @@
     equipmentDetail.appendChild(header);
 
     var lines = [
-      detailLine(ui.type, itemType(slot, item)),
       detailLine(ui.itemLevel, item.item_level ? String(item.item_level) : null),
       detailLine(ui.enchantsGems, details.length ? details.join(' · ') : null),
     ].filter(Boolean);
