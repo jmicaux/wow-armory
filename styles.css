@@ -16,9 +16,9 @@
 
 body {
   margin: 0;
-  width: 420px;
-  min-width: 420px;
-  max-width: 420px;
+  width: 760px;
+  min-width: 760px;
+  max-width: 760px;
   color: var(--text);
   background: var(--bg);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -63,7 +63,7 @@ select:focus-visible,
 
 .popup {
   position: relative;
-  width: 420px;
+  width: 760px;
 }
 
 .options-page {
@@ -215,8 +215,8 @@ select {
 }
 
 .profile-main img {
-  width: 96px;
-  height: 96px;
+  width: 160px;
+  height: 160px;
   border: 1px solid var(--line);
   border-radius: 8px;
   object-fit: cover;
@@ -252,25 +252,25 @@ select {
 
 .equipment-top {
   display: grid;
-  grid-template-columns: 96px 48px;
-  gap: 7px;
-  justify-content: start;
-  align-items: end;
-  min-height: 96px;
+  grid-template-columns: repeat(4, 48px);
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 48px;
+  width: 100%;
 }
 
-.equipment-grid {
+.equipment-body {
   display: grid;
-  grid-template-columns: 48px 250px 48px;
-  row-gap: 2px;
-  column-gap: 7px;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 10px;
   align-items: start;
   justify-content: center;
 }
 
 .equipment-column {
   display: grid;
-  gap: 4px;
+  grid-template-rows: repeat(5, 48px);
+  gap: 6px;
 }
 
 .equipment-item {
@@ -282,8 +282,9 @@ select {
   border-radius: 7px;
   background: #ffffff;
   color: var(--text);
-  min-height: 43px;
-  padding: 3px;
+  width: 48px;
+  min-height: 48px;
+  padding: 2px;
   text-decoration: none;
 }
 
@@ -293,42 +294,19 @@ select {
   pointer-events: none;
 }
 
-.equipment-top .equipment-item:first-child {
-  min-height: 96px;
-}
-
-.equipment-top .equipment-item:first-child img {
-  width: 88px;
-  height: 88px;
-}
-
 .equipment-item:hover {
   border-color: var(--accent);
 }
 
 .equipment-item img {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 5px;
   object-fit: cover;
 }
 
 .equipment-slot {
-  color: var(--muted);
-}
-
-.equipment-slot {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 0.5rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+  display: none;
 }
 
 .equipment-empty {
@@ -357,7 +335,9 @@ select {
   display: grid;
   gap: 8px;
   grid-template-rows: 62px minmax(112px, 1fr) auto;
-  min-height: 246px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: 440px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--soft);
@@ -432,7 +412,7 @@ select {
   align-items: end;
   justify-content: center;
   justify-items: center;
-  margin-top: 0;
+  margin-top: 2px;
 }
 
 .equipment-detail-line strong {
