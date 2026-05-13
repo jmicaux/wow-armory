@@ -492,10 +492,12 @@
       .then(function (text) {
         var name = parseWowheadItemName(text);
         localizedItemNames[key] = name || item.name || '';
+        item.localized_name = localizedItemNames[key];
         return localizedItemNames[key];
       })
       .catch(function () {
         localizedItemNames[key] = item.name || '';
+        item.localized_name = localizedItemNames[key];
         return localizedItemNames[key];
       })
       .finally(function () {
@@ -507,12 +509,25 @@
 
   function primeLocalizedItemNames(items) {
     if (!items) {
+      return Promise.resolve([]);
+    }
+
+    return Promise.all(Object.keys(items).map(function (slot) {
+      if (items[slot]) {
+        return resolveLocalizedItemName(items[slot]);
+      }
+      return Promise.resolve('');
+    }));
+  }
+
+  function clearLocalizedItemNames(items) {
+    if (!items) {
       return;
     }
 
     Object.keys(items).forEach(function (slot) {
-      if (items[slot]) {
-        resolveLocalizedItemName(items[slot]);
+      if (items[slot] && items[slot].localized_name) {
+        delete items[slot].localized_name;
       }
     });
   }
@@ -546,7 +561,7 @@
 
   function itemDisplayName(item) {
     var key = item && item.item_id ? localizedItemKey(item) : '';
-    return (key && localizedItemNames[key]) || (item && item.name) || 'Unknown item';
+    return (item && item.localized_name) || (key && localizedItemNames[key]) || (item && item.name) || 'Unknown item';
   }
 
   function currentSettings() {
@@ -753,7 +768,7 @@
     row.href = itemUrl(item);
     row.target = '_blank';
     row.rel = 'noopener';
-    row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + (item.name || 'Unknown item'));
+    row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + itemDisplayName(item));
     row.title = itemDisplayName(item);
     var data = wowheadData(item);
     if (data) {
@@ -813,7 +828,6 @@
       }
     });
 
-    primeLocalizedItemNames(items);
   }
 
   function renderProfile(data) {
@@ -840,6 +854,7 @@
       locale: currentSettings().locale
     });
     officialLink.textContent = ui.openOfficial;
+    return primeLocalizedItemNames(data.gear && data.gear.items);
   }
 
   function renderFallback(settings, message) {
@@ -879,7 +894,11 @@
         return WowArmory.loadCharacter(cleanSettings);
       })
       .then(function (data) {
-        renderProfile(data);
+        return renderProfile(data).then(function () {
+          return data;
+        });
+      })
+      .then(function () {
         profile.classList.remove('is-hidden');
         enableCharacterMode();
         setStatus(ui.statusLoaded);
@@ -932,6 +951,7 @@
     localizedItemRequests = {};
     applyLocale();
     if (lastProfileData && !profile.classList.contains('is-hidden')) {
+      clearLocalizedItemNames(lastProfileData.gear && lastProfileData.gear.items);
       renderProfile(lastProfileData);
     } else if (lastFallbackSettings && !fallbackProfile.classList.contains('is-hidden')) {
       renderFallback(lastFallbackSettings, lastFallbackMessage);
