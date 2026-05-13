@@ -32,11 +32,5 @@ The original UWA widget disappeared with the shutdown of netvibes.com. This rebu
 
 ## Notes
 
-Default character inspired by the official WoW profile URL shared during recovery:
-
-- Region: `eu`
-- Realm: `archimonde`
-- Character: `Poilgrês`
-
 The extension does not use Blizzard API credentials. Data availability depends on Raider.IO.
 When Raider.IO has no public data for the configured character, the popup falls back to a direct link to the official World of Warcraft Armory profile.
