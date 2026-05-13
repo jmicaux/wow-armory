@@ -24,6 +24,7 @@
   var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
+  var officialFaviconUrl = 'https://favicon.im/worldofwarcraft.blizzard.com';
   var lastProfileData = null;
   var lastFallbackSettings = null;
   var lastFallbackMessage = '';
@@ -651,8 +652,8 @@
     setIconLabel(form.querySelector('button[type="submit"]'), '↦', ui.load);
     document.querySelector('.status').textContent = ui.statusIdle;
     setIconLink(document.querySelector('#profile-link'), 'assets/raiderio_favicon.ico', ui.openRaidio);
-    setIconLink(document.querySelector('#official-link'), 'assets/wow_favicon.gif', ui.openOfficial);
-    setIconLink(document.querySelector('#fallback-official-link'), 'assets/wow_favicon.gif', ui.openOfficial);
+    setIconLink(document.querySelector('#official-link'), officialFaviconUrl, ui.openOfficial);
+    setIconLink(document.querySelector('#fallback-official-link'), officialFaviconUrl, ui.openOfficial);
     document.querySelector('#fallback-profile .eyebrow').textContent = ui.officialArmory;
     document.querySelector('#fallback-profile p:last-of-type').textContent = ui.fallbackText;
   }
