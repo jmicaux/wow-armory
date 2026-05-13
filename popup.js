@@ -603,7 +603,7 @@
 
   function isWowheadErrorText(value) {
     var text = String(value || '').toLowerCase();
-    return !text || text.indexOf('request could not be satisfied') >= 0 || text.indexOf('error:') === 0;
+    return !text || text.indexOf('request could not be satisfied') >= 0 || text.indexOf('error:') === 0 || text.indexOf('403 error') >= 0;
   }
 
   function decodeWowheadText(value) {
@@ -665,8 +665,13 @@
       item.original_name = item.name;
     }
 
-    if (localizedItemResolved[key] && localizedItemNames[key]) {
+    if (localizedItemResolved[key] && localizedItemNames[key] && !isWowheadErrorText(localizedItemNames[key])) {
       return Promise.resolve(localizedItemNames[key]);
+    }
+
+    if (isWowheadErrorText(localizedItemNames[key])) {
+      delete localizedItemNames[key];
+      delete localizedItemResolved[key];
     }
 
     if (localizedItemRequests[key]) {
@@ -686,7 +691,11 @@
             })
             .then(function (pageText) {
               var pageName = parseWowheadItemNameFromPage(pageText);
-              localizedItemNames[key] = decodeWowheadText(pageName || name || item.original_name || item.name || '');
+              var resolved = decodeWowheadText(pageName || name || item.original_name || item.name || '');
+              if (isWowheadErrorText(resolved)) {
+                resolved = decodeWowheadText(item.original_name || item.name || '');
+              }
+              localizedItemNames[key] = resolved;
               localizedItemResolved[key] = Boolean(localizedItemNames[key]);
               item.localized_name = localizedItemNames[key];
               item.name = localizedItemNames[key];
@@ -695,6 +704,9 @@
         }
 
         localizedItemNames[key] = decodeWowheadText(name || item.original_name || item.name || '');
+        if (isWowheadErrorText(localizedItemNames[key])) {
+          localizedItemNames[key] = decodeWowheadText(item.original_name || item.name || '');
+        }
         localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
@@ -704,6 +716,10 @@
         if (localeKey() === 'en-us' || localeKey() === 'en-gb') {
           localizedItemNames[key] = decodeWowheadText(item.original_name || item.name || '');
           localizedItemResolved[key] = Boolean(localizedItemNames[key]);
+        }
+        if (isWowheadErrorText(localizedItemNames[key])) {
+          delete localizedItemNames[key];
+          delete localizedItemResolved[key];
         }
         item.localized_name = localizedItemNames[key];
         if (localizedItemNames[key]) {
