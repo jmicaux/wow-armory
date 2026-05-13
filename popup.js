@@ -539,12 +539,7 @@
     if (path) {
       base += path + '/';
     }
-    var slug = localizedItemSlug(item);
-    var href = base + 'item=' + encodeURIComponent(item.item_id);
-    if (slug) {
-      href += '/' + encodeURIComponent(slug);
-    }
-    return href + '&xml';
+    return base + 'item=' + encodeURIComponent(item.item_id) + '&xml';
   }
 
   function localizedItemPageUrl(item) {
