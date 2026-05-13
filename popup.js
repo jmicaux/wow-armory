@@ -23,25 +23,375 @@
   var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
+  var lastProfileData = null;
+  var lastFallbackSettings = null;
+  var lastFallbackMessage = '';
 
-  var slotLabels = {
-    head: 'Head',
-    neck: 'Neck',
-    shoulder: 'Shoulders',
-    back: 'Back',
-    chest: 'Chest',
-    waist: 'Waist',
-    wrist: 'Wrist',
-    hands: 'Hands',
-    legs: 'Legs',
-    feet: 'Feet',
-    finger1: 'Finger 1',
-    finger2: 'Finger 2',
-    trinket1: 'Trinket 1',
-    trinket2: 'Trinket 2',
-    mainhand: 'Main hand',
-    offhand: 'Off hand'
+  var i18n = {
+    'en-us': {
+      title: 'Armory Lite',
+      openSettings: 'Open settings',
+      refresh: 'Refresh',
+      locale: 'Locale',
+      region: 'Region',
+      realm: 'Realm',
+      character: 'Character',
+      load: 'Load',
+      statusIdle: 'Enter a character to load profile data.',
+      statusLoading: 'Loading character...',
+      statusLoaded: 'Character sheet loaded.',
+      equipment: 'Equipment',
+      inspectHint: 'Hover or focus an item to inspect details.',
+      noEquipment: 'No equipment data available.',
+      itemLevel: 'Item level',
+      itemId: 'Item ID',
+      quality: 'Quality',
+      enchantsGems: 'Enchants / gems',
+      bonuses: 'Bonuses',
+      type: 'Type',
+      openWowhead: 'Open on Wowhead',
+      openRaidio: 'Open Raider.IO profile',
+      openOfficial: 'Open official Armory',
+      officialArmory: 'Official Armory',
+      fallbackText: 'Raider.IO does not currently expose this character. You can still open the official World of Warcraft profile.',
+      slotLabels: {
+        head: 'Head',
+        neck: 'Neck',
+        shoulder: 'Shoulders',
+        back: 'Back',
+        chest: 'Chest',
+        waist: 'Waist',
+        wrist: 'Wrist',
+        hands: 'Hands',
+        legs: 'Legs',
+        feet: 'Feet',
+        finger1: 'Finger 1',
+        finger2: 'Finger 2',
+        trinket1: 'Trinket 1',
+        trinket2: 'Trinket 2',
+        mainhand: 'Main hand',
+        offhand: 'Off hand'
+      }
+    },
+    'fr-fr': {
+      title: 'Armory Lite',
+      openSettings: 'Ouvrir les réglages',
+      refresh: 'Rafraîchir',
+      locale: 'Langue',
+      region: 'Région',
+      realm: 'Serveur',
+      character: 'Personnage',
+      load: 'Charger',
+      statusIdle: 'Saisissez un personnage pour charger la fiche.',
+      statusLoading: 'Chargement du personnage...',
+      statusLoaded: 'Fiche personnage chargée.',
+      equipment: 'Équipement',
+      inspectHint: 'Survolez ou sélectionnez un objet pour afficher le détail.',
+      noEquipment: 'Aucune donnée d’équipement disponible.',
+      itemLevel: 'Niveau d’objet',
+      itemId: 'ID objet',
+      quality: 'Qualité',
+      enchantsGems: 'Enchantements / gemmes',
+      bonuses: 'Bonus',
+      type: 'Type',
+      openWowhead: 'Ouvrir sur Wowhead',
+      openRaidio: 'Ouvrir le profil Raider.IO',
+      openOfficial: 'Ouvrir l’armurerie officielle',
+      officialArmory: 'Armurerie officielle',
+      fallbackText: 'Raider.IO n’expose pas actuellement ce personnage. Vous pouvez toujours ouvrir le profil officiel World of Warcraft.',
+      slotLabels: {
+        head: 'Tête',
+        neck: 'Cou',
+        shoulder: 'Épaules',
+        back: 'Dos',
+        chest: 'Torse',
+        waist: 'Taille',
+        wrist: 'Poignet',
+        hands: 'Mains',
+        legs: 'Jambes',
+        feet: 'Pieds',
+        finger1: 'Doigt 1',
+        finger2: 'Doigt 2',
+        trinket1: 'Bijou 1',
+        trinket2: 'Bijou 2',
+        mainhand: 'Main droite',
+        offhand: 'Main gauche'
+      }
+    },
+    'de-de': {
+      title: 'Armory Lite',
+      openSettings: 'Einstellungen öffnen',
+      refresh: 'Aktualisieren',
+      locale: 'Sprache',
+      region: 'Region',
+      realm: 'Realm',
+      character: 'Charakter',
+      load: 'Laden',
+      statusIdle: 'Gib einen Charakter ein, um das Profil zu laden.',
+      statusLoading: 'Charakter wird geladen...',
+      statusLoaded: 'Charakterbogen geladen.',
+      equipment: 'Ausrüstung',
+      inspectHint: 'Element berühren oder fokussieren, um Details zu sehen.',
+      noEquipment: 'Keine Ausrüstungsdaten verfügbar.',
+      itemLevel: 'Gegenstandsstufe',
+      itemId: 'Gegenstands-ID',
+      quality: 'Qualität',
+      enchantsGems: 'Verzauberungen / Edelsteine',
+      bonuses: 'Bonusse',
+      type: 'Typ',
+      openWowhead: 'Auf Wowhead öffnen',
+      openRaidio: 'Raider.IO-Profil öffnen',
+      openOfficial: 'Offizielle Armory öffnen',
+      officialArmory: 'Offizielle Armory',
+      fallbackText: 'Raider.IO stellt diesen Charakter derzeit nicht bereit. Du kannst weiterhin das offizielle World of Warcraft-Profil öffnen.',
+      slotLabels: {
+        head: 'Kopf',
+        neck: 'Hals',
+        shoulder: 'Schultern',
+        back: 'Rücken',
+        chest: 'Brust',
+        waist: 'Taille',
+        wrist: 'Handgelenk',
+        hands: 'Hände',
+        legs: 'Beine',
+        feet: 'Füße',
+        finger1: 'Ring 1',
+        finger2: 'Ring 2',
+        trinket1: 'Schmuck 1',
+        trinket2: 'Schmuck 2',
+        mainhand: 'Haupthand',
+        offhand: 'Nebenhand'
+      }
+    },
+    'es-es': {
+      title: 'Armory Lite',
+      openSettings: 'Abrir ajustes',
+      refresh: 'Actualizar',
+      locale: 'Idioma',
+      region: 'Región',
+      realm: 'Reino',
+      character: 'Personaje',
+      load: 'Cargar',
+      statusIdle: 'Introduce un personaje para cargar el perfil.',
+      statusLoading: 'Cargando personaje...',
+      statusLoaded: 'Ficha cargada.',
+      equipment: 'Equipo',
+      inspectHint: 'Pasa el cursor o enfoca un objeto para ver los detalles.',
+      noEquipment: 'No hay datos de equipo disponibles.',
+      itemLevel: 'Nivel de objeto',
+      itemId: 'ID de objeto',
+      quality: 'Calidad',
+      enchantsGems: 'Encantamientos / gemas',
+      bonuses: 'Bonificaciones',
+      type: 'Tipo',
+      openWowhead: 'Abrir en Wowhead',
+      openRaidio: 'Abrir perfil de Raider.IO',
+      openOfficial: 'Abrir armadura oficial',
+      officialArmory: 'Armadura oficial',
+      fallbackText: 'Raider.IO no muestra actualmente este personaje. Aun así puedes abrir el perfil oficial de World of Warcraft.',
+      slotLabels: {
+        head: 'Cabeza',
+        neck: 'Cuello',
+        shoulder: 'Hombros',
+        back: 'Espalda',
+        chest: 'Pecho',
+        waist: 'Cintura',
+        wrist: 'Muñeca',
+        hands: 'Manos',
+        legs: 'Piernas',
+        feet: 'Pies',
+        finger1: 'Anillo 1',
+        finger2: 'Anillo 2',
+        trinket1: 'Abalorio 1',
+        trinket2: 'Abalorio 2',
+        mainhand: 'Mano derecha',
+        offhand: 'Mano izquierda'
+      }
+    },
+    'pt-br': {
+      title: 'Armory Lite',
+      openSettings: 'Abrir configurações',
+      refresh: 'Atualizar',
+      locale: 'Idioma',
+      region: 'Região',
+      realm: 'Reino',
+      character: 'Personagem',
+      load: 'Carregar',
+      statusIdle: 'Informe um personagem para carregar o perfil.',
+      statusLoading: 'Carregando personagem...',
+      statusLoaded: 'Ficha carregada.',
+      equipment: 'Equipamento',
+      inspectHint: 'Passe o cursor ou foque um item para ver os detalhes.',
+      noEquipment: 'Nenhum dado de equipamento disponível.',
+      itemLevel: 'Nível do item',
+      itemId: 'ID do item',
+      quality: 'Qualidade',
+      enchantsGems: 'Encantamentos / gemas',
+      bonuses: 'Bônus',
+      type: 'Tipo',
+      openWowhead: 'Abrir no Wowhead',
+      openRaidio: 'Abrir perfil do Raider.IO',
+      openOfficial: 'Abrir armaria oficial',
+      officialArmory: 'Armaria oficial',
+      fallbackText: 'O Raider.IO não expõe este personagem no momento. Ainda assim, você pode abrir o perfil oficial de World of Warcraft.',
+      slotLabels: {
+        head: 'Cabeça',
+        neck: 'Pescoço',
+        shoulder: 'Ombros',
+        back: 'Capa',
+        chest: 'Peito',
+        waist: 'Cintura',
+        wrist: 'Punho',
+        hands: 'Mãos',
+        legs: 'Pernas',
+        feet: 'Pés',
+        finger1: 'Anel 1',
+        finger2: 'Anel 2',
+        trinket1: 'Berloque 1',
+        trinket2: 'Berloque 2',
+        mainhand: 'Mão principal',
+        offhand: 'Mão secundária'
+      }
+    },
+    'ru-ru': {
+      title: 'Armory Lite',
+      openSettings: 'Открыть настройки',
+      refresh: 'Обновить',
+      locale: 'Язык',
+      region: 'Регион',
+      realm: 'Сервер',
+      character: 'Персонаж',
+      load: 'Загрузить',
+      statusIdle: 'Укажите персонажа, чтобы загрузить профиль.',
+      statusLoading: 'Загрузка персонажа...',
+      statusLoaded: 'Лист персонажа загружен.',
+      equipment: 'Экипировка',
+      inspectHint: 'Наведите курсор или сфокусируйте предмет, чтобы увидеть детали.',
+      noEquipment: 'Данные об экипировке недоступны.',
+      itemLevel: 'Уровень предмета',
+      itemId: 'ID предмета',
+      quality: 'Качество',
+      enchantsGems: 'Чары / камни',
+      bonuses: 'Бонусы',
+      type: 'Тип',
+      openWowhead: 'Открыть на Wowhead',
+      openRaidio: 'Открыть профиль Raider.IO',
+      openOfficial: 'Открыть официальный Armory',
+      officialArmory: 'Официальный Armory',
+      fallbackText: 'Raider.IO пока не показывает этого персонажа. Но вы можете открыть официальный профиль World of Warcraft.',
+      slotLabels: {
+        head: 'Голова',
+        neck: 'Шея',
+        shoulder: 'Плечи',
+        back: 'Спина',
+        chest: 'Грудь',
+        waist: 'Пояс',
+        wrist: 'Запястье',
+        hands: 'Кисти',
+        legs: 'Ноги',
+        feet: 'Ступни',
+        finger1: 'Кольцо 1',
+        finger2: 'Кольцо 2',
+        trinket1: 'Аксессуар 1',
+        trinket2: 'Аксессуар 2',
+        mainhand: 'Основная рука',
+        offhand: 'Вторая рука'
+      }
+    },
+    'ko-kr': {
+      title: 'Armory Lite',
+      openSettings: '설정 열기',
+      refresh: '새로고침',
+      locale: '언어',
+      region: '지역',
+      realm: '서버',
+      character: '캐릭터',
+      load: '불러오기',
+      statusIdle: '캐릭터를 입력하면 프로필을 불러옵니다.',
+      statusLoading: '캐릭터를 불러오는 중...',
+      statusLoaded: '캐릭터 시트가 로드되었습니다.',
+      equipment: '장비',
+      inspectHint: '아이템에 마우스를 올리거나 포커스하면 자세한 정보를 볼 수 있습니다.',
+      noEquipment: '장비 데이터가 없습니다.',
+      itemLevel: '아이템 레벨',
+      itemId: '아이템 ID',
+      quality: '품질',
+      enchantsGems: '마법부여 / 보석',
+      bonuses: '보너스',
+      type: '종류',
+      openWowhead: 'Wowhead에서 열기',
+      openRaidio: 'Raider.IO 프로필 열기',
+      openOfficial: '공식 Armory 열기',
+      officialArmory: '공식 Armory',
+      fallbackText: 'Raider.IO에서는 아직 이 캐릭터를 제공하지 않습니다. 대신 공식 World of Warcraft 프로필을 열 수 있습니다.',
+      slotLabels: {
+        head: '머리',
+        neck: '목',
+        shoulder: '어깨',
+        back: '등',
+        chest: '가슴',
+        waist: '허리',
+        wrist: '손목',
+        hands: '손',
+        legs: '다리',
+        feet: '발',
+        finger1: '손가락 1',
+        finger2: '손가락 2',
+        trinket1: '장신구 1',
+        trinket2: '장신구 2',
+        mainhand: '주무기',
+        offhand: '보조무기'
+      }
+    },
+    'zh-tw': {
+      title: 'Armory Lite',
+      openSettings: '開啟設定',
+      refresh: '重新整理',
+      locale: '語言',
+      region: '地區',
+      realm: '伺服器',
+      character: '角色',
+      load: '載入',
+      statusIdle: '輸入角色即可載入資料。',
+      statusLoading: '角色載入中...',
+      statusLoaded: '角色資料已載入。',
+      equipment: '裝備',
+      inspectHint: '將滑鼠移到物品上或聚焦即可查看詳細資訊。',
+      noEquipment: '沒有可用的裝備資料。',
+      itemLevel: '物品等級',
+      itemId: '物品 ID',
+      quality: '品質',
+      enchantsGems: '附魔 / 寶石',
+      bonuses: '加成',
+      type: '類型',
+      openWowhead: '在 Wowhead 開啟',
+      openRaidio: '開啟 Raider.IO 個人檔案',
+      openOfficial: '開啟官方 Armory',
+      officialArmory: '官方 Armory',
+      fallbackText: 'Raider.IO 目前未提供此角色資料。你仍可開啟官方 World of Warcraft 個人檔案。',
+      slotLabels: {
+        head: '頭部',
+        neck: '頸部',
+        shoulder: '肩部',
+        back: '背部',
+        chest: '胸部',
+        waist: '腰部',
+        wrist: '手腕',
+        hands: '手部',
+        legs: '腿部',
+        feet: '腳部',
+        finger1: '戒指 1',
+        finger2: '戒指 2',
+        trinket1: '飾品 1',
+        trinket2: '飾品 2',
+        mainhand: '主手',
+        offhand: '副手'
+      }
+    }
   };
+
+  var slotLabels = {};
+  var ui = i18n['fr-fr'];
 
   var leftSlots = [
     'head',
@@ -71,6 +421,37 @@
   function setStatus(message, isError) {
     status.textContent = message;
     status.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function localeKey() {
+    return WowArmory.cleanLocale(locale.value);
+  }
+
+  function currentUi() {
+    return i18n[localeKey()] || i18n['en-us'];
+  }
+
+  function applyLocale() {
+    ui = currentUi();
+    slotLabels = ui.slotLabels;
+
+    document.documentElement.lang = localeKey();
+    document.title = ui.title;
+    menuButton.setAttribute('aria-label', ui.openSettings);
+    refreshButton.textContent = ui.refresh;
+    form.setAttribute('aria-label', ui.openSettings);
+    form.querySelector('label span').textContent = ui.locale;
+    form.querySelectorAll('label span')[1].textContent = ui.region;
+    form.querySelectorAll('label span')[2].textContent = ui.realm;
+    form.querySelectorAll('label span')[3].textContent = ui.character;
+    form.querySelector('button[type="submit"]').textContent = ui.load;
+    document.getElementById('equipment-title').textContent = ui.equipment;
+    document.querySelector('.status').textContent = ui.statusIdle;
+    document.querySelector('#profile-link').textContent = ui.openRaidio;
+    document.querySelector('#official-link').textContent = ui.openOfficial;
+    document.querySelector('#fallback-official-link').textContent = ui.openOfficial;
+    document.querySelector('#fallback-profile .eyebrow').textContent = ui.officialArmory;
+    document.querySelector('#fallback-profile p:last-of-type').textContent = ui.fallbackText;
   }
 
   function currentSettings() {
@@ -182,7 +563,7 @@
     equipmentDetail.textContent = '';
     var empty = document.createElement('p');
     empty.className = 'equipment-detail-empty';
-    empty.textContent = 'Hover or focus an item to inspect details.';
+    empty.textContent = ui.inspectHint;
     equipmentDetail.appendChild(empty);
   }
 
@@ -235,12 +616,12 @@
     equipmentDetail.appendChild(header);
 
     var lines = [
-      detailLine('Type', itemType(slot, item)),
-      detailLine('Item level', item.item_level ? String(item.item_level) : null),
-      detailLine('Item ID', item.item_id ? String(item.item_id) : null),
-      detailLine('Quality', item.item_quality !== undefined ? String(item.item_quality) : null),
-      detailLine('Enchants / gems', details.length ? details.join(' · ') : null),
-      detailLine('Bonuses', Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(', ') : null)
+      detailLine(ui.type, itemType(slot, item)),
+      detailLine(ui.itemLevel, item.item_level ? String(item.item_level) : null),
+      detailLine(ui.itemId, item.item_id ? String(item.item_id) : null),
+      detailLine(ui.quality, item.item_quality !== undefined ? String(item.item_quality) : null),
+      detailLine(ui.enchantsGems, details.length ? details.join(' · ') : null),
+      detailLine(ui.bonuses, Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(', ') : null)
     ].filter(Boolean);
 
     var list = document.createElement('div');
@@ -255,7 +636,7 @@
     link.href = itemUrl(item);
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = 'Open on Wowhead';
+    link.textContent = ui.openWowhead;
     var data = wowheadData(item);
     if (data) {
       link.setAttribute('data-wowhead', data);
@@ -307,7 +688,7 @@
     if (!items) {
       var empty = document.createElement('p');
       empty.className = 'equipment-empty';
-      empty.textContent = 'No equipment data available.';
+      empty.textContent = ui.noEquipment;
       equipmentDetail.textContent = '';
       equipmentDetail.appendChild(empty);
       return;
@@ -331,6 +712,9 @@
   }
 
   function renderProfile(data) {
+    lastProfileData = data;
+    lastFallbackSettings = null;
+    lastFallbackMessage = '';
     avatar.src = data.thumbnail_url || 'assets/icon-128.png';
     avatar.alt = data.name + ' avatar';
     profileName.textContent = data.name;
@@ -343,21 +727,27 @@
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
     renderEquipment(data.gear && data.gear.items);
     profileLink.href = data.profile_url || '#';
+    profileLink.textContent = ui.openRaidio;
     officialLink.href = WowArmory.officialProfileUrl({
       region: data.region || currentSettings().region,
       realm: data.realm || currentSettings().realm,
       character: data.name || currentSettings().character,
       locale: currentSettings().locale
     });
+    officialLink.textContent = ui.openOfficial;
   }
 
   function renderFallback(settings, message) {
+    lastProfileData = null;
+    lastFallbackSettings = settings;
+    lastFallbackMessage = message || ui.fallbackText;
     var officialUrl = WowArmory.officialProfileUrl(settings);
     fallbackName.textContent = settings.character;
     fallbackMeta.textContent = settings.region.toUpperCase() + ' · ' + settings.realm;
     fallbackOfficialLink.href = officialUrl;
+    fallbackOfficialLink.textContent = ui.openOfficial;
     fallbackProfile.classList.remove('is-hidden');
-    setStatus(message || 'Public profile data is unavailable.', true);
+    setStatus(lastFallbackMessage, true);
   }
 
   function load(settings) {
@@ -369,12 +759,12 @@
     };
 
     if (!cleanSettings.realm || !cleanSettings.character) {
-      setStatus('Realm and character are required.', true);
+      setStatus(ui.statusIdle, true);
       return Promise.resolve();
     }
 
     fillForm(cleanSettings);
-    setStatus('Loading character...');
+    setStatus(ui.statusLoading);
     status.classList.remove('is-hidden');
     profile.classList.add('is-hidden');
     fallbackProfile.classList.add('is-hidden');
@@ -387,7 +777,7 @@
         renderProfile(data);
         profile.classList.remove('is-hidden');
         enableCharacterMode();
-        setStatus('Character sheet loaded.');
+        setStatus(ui.statusLoaded);
         status.classList.add('is-hidden');
       })
       .catch(function (error) {
@@ -428,6 +818,16 @@
 
   WowArmory.getSettings().then(function (settings) {
     fillForm(settings);
+    applyLocale();
     load(settings);
+  });
+
+  locale.addEventListener('change', function () {
+    applyLocale();
+    if (lastProfileData && !profile.classList.contains('is-hidden')) {
+      renderProfile(lastProfileData);
+    } else if (lastFallbackSettings && !fallbackProfile.classList.contains('is-hidden')) {
+      renderFallback(lastFallbackSettings, lastFallbackMessage);
+    }
   });
 }());
