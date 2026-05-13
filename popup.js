@@ -627,31 +627,32 @@
   }
 
   function parseWowheadItemNameFromPage(htmlText) {
-    var h1Match = String(htmlText || '').match(/<h1[^>]*class=["'][^"']*(?:heading-size-1|heading-title|item-name)[^"']*["'][^>]*>([^<]+)<\/h1>/i);
-    if (h1Match && h1Match[1]) {
-      var h1Name = cleanWowheadPageTitle(decodeWowheadText(h1Match[1]));
-      return isWowheadErrorText(h1Name) ? null : h1Name;
-    }
-
-    var dataNameMatch = String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i);
-    if (dataNameMatch && dataNameMatch[1]) {
-      var dataName = cleanWowheadPageTitle(decodeWowheadText(dataNameMatch[1]));
-      return isWowheadErrorText(dataName) ? null : dataName;
-    }
-
-    var titleMatch = String(htmlText || '').match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
-    if (titleMatch && titleMatch[1]) {
-      var ogName = cleanWowheadPageTitle(decodeWowheadText(titleMatch[1]));
-      return isWowheadErrorText(ogName) ? null : ogName;
-    }
-
-    var pageTitleMatch = String(htmlText || '').match(/<title>([^<]+)<\/title>/i);
-    if (!pageTitleMatch || !pageTitleMatch[1]) {
+    var doc = new DOMParser().parseFromString(String(htmlText || ''), 'text/html');
+    if (doc.querySelector('parsererror')) {
       return null;
     }
 
-    var pageName = cleanWowheadPageTitle(decodeWowheadText(pageTitleMatch[1]));
-    return isWowheadErrorText(pageName) ? null : pageName;
+    var candidates = [
+      doc.querySelector('meta[property="og:title"]') && doc.querySelector('meta[property="og:title"]').getAttribute('content'),
+      doc.querySelector('h1') && doc.querySelector('h1').textContent,
+      doc.title,
+      String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i)
+        ? String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i)[1]
+        : null
+    ];
+
+    for (var i = 0; i < candidates.length; i += 1) {
+      if (!candidates[i]) {
+        continue;
+      }
+
+      var candidate = cleanWowheadPageTitle(decodeWowheadText(candidates[i]));
+      if (!isWowheadErrorText(candidate)) {
+        return candidate;
+      }
+    }
+
+    return null;
   }
 
   function resolveLocalizedItemName(item) {
