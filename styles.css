@@ -97,6 +97,11 @@ h2 {
   font-size: 1.1rem;
 }
 
+h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
 .character-form,
 .options-form,
 .profile {
@@ -195,6 +200,91 @@ select {
 
 .profile-link-secondary {
   background: #ffffff;
+}
+
+.equipment {
+  display: grid;
+  gap: 10px;
+}
+
+.equipment-list {
+  display: grid;
+  gap: 8px;
+}
+
+.equipment-item {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #ffffff;
+  padding: 8px;
+}
+
+.equipment-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.equipment-body {
+  min-width: 0;
+}
+
+.equipment-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.equipment-slot,
+.equipment-ilvl,
+.equipment-meta {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.equipment-ilvl {
+  white-space: nowrap;
+}
+
+.equipment-name {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-weight: 800;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.equipment-name:hover {
+  text-decoration: underline;
+}
+
+.equipment-meta {
+  margin: 3px 0 0;
+}
+
+.equipment-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
+.quality-2 .equipment-name {
+  color: #1f7a32;
+}
+
+.quality-3 .equipment-name {
+  color: #1d5fd1;
+}
+
+.quality-4 .equipment-name {
+  color: #7a3ec8;
 }
 
 .fallback-card {
