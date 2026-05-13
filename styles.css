@@ -351,7 +351,7 @@ select {
   grid-template-columns: 1fr;
   gap: 2px;
   justify-items: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--item-quality, var(--line));
   border-radius: 7px;
   background: #ffffff;
   color: var(--text);
@@ -367,7 +367,7 @@ select {
 }
 
 .equipment-item:hover {
-  border-color: var(--accent);
+  border-color: var(--item-quality, var(--accent));
 }
 
 .equipment-item img {
@@ -402,17 +402,36 @@ select {
 
 .equipment-item.quality-2,
 .equipment-detail-name.quality-2 {
+  --item-quality: #1eff00;
   color: #1f7a32;
 }
 
 .equipment-item.quality-3,
 .equipment-detail-name.quality-3 {
+  --item-quality: #0070dd;
   color: #1d5fd1;
 }
 
 .equipment-item.quality-4,
 .equipment-detail-name.quality-4 {
+  --item-quality: #a335ee;
   color: #7a3ec8;
+}
+
+.equipment-item.quality-1 {
+  --item-quality: #9d9d9d;
+}
+
+.equipment-item.quality-5 {
+  --item-quality: #ff8000;
+}
+
+.equipment-item.quality-6 {
+  --item-quality: #e6cc80;
+}
+
+.equipment-item.quality-0 {
+  --item-quality: #9d9d9d;
 }
 
 .equipment-detail {
