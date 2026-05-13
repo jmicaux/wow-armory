@@ -205,8 +205,8 @@ select {
 
 .profile-main {
   display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 14px;
+  align-items: flex-start;
   min-width: 0;
 }
 
@@ -215,11 +215,12 @@ select {
 }
 
 .profile-main img {
-  width: 56px;
-  height: 56px;
+  width: 96px;
+  height: 96px;
   border: 1px solid var(--line);
   border-radius: 8px;
   object-fit: cover;
+  flex: 0 0 auto;
 }
 
 #profile-meta,
