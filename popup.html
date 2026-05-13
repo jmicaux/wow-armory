@@ -14,20 +14,32 @@
         <h1>Armory Lite</h1>
       </div>
       <div class="header-actions">
-        <button class="menu-toggle" type="button" id="menu-button" aria-label="Change character" aria-controls="character-form" aria-expanded="false">
+        <button class="menu-toggle" type="button" id="menu-button" aria-label="Open settings" aria-controls="character-form" aria-expanded="false">
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </button>
-        <div class="popup-menu is-hidden" id="popup-menu" role="menu" aria-label="Popup actions">
-          <button type="button" id="menu-character">Change character</button>
-          <button type="button" id="menu-options">Options</button>
-        </div>
         <button type="button" id="refresh-button" title="Refresh character">Refresh</button>
       </div>
     </header>
 
     <form class="character-form" id="character-form" aria-label="Change character">
+      <label>
+        <span>Locale</span>
+        <select id="locale" name="locale">
+          <option value="fr-fr">Français</option>
+          <option value="en-us">English US</option>
+          <option value="en-gb">English EU</option>
+          <option value="de-de">Deutsch</option>
+          <option value="es-es">Español EU</option>
+          <option value="es-mx">Español LATAM</option>
+          <option value="it-it">Italiano</option>
+          <option value="pt-br">Português BR</option>
+          <option value="ru-ru">Русский</option>
+          <option value="ko-kr">한국어</option>
+          <option value="zh-tw">繁體中文</option>
+        </select>
+      </label>
       <label>
         <span>Region</span>
         <select id="region" name="region">

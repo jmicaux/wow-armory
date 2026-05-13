@@ -1,14 +1,12 @@
 (function () {
   var popup = document.querySelector('.popup');
   var form = document.getElementById('character-form');
+  var locale = document.getElementById('locale');
   var region = document.getElementById('region');
   var realm = document.getElementById('realm');
   var character = document.getElementById('character');
   var status = document.getElementById('status');
   var menuButton = document.getElementById('menu-button');
-  var popupMenu = document.getElementById('popup-menu');
-  var menuCharacter = document.getElementById('menu-character');
-  var menuOptions = document.getElementById('menu-options');
   var refreshButton = document.getElementById('refresh-button');
   var profile = document.getElementById('profile');
   var fallbackProfile = document.getElementById('fallback-profile');
@@ -25,7 +23,6 @@
   var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
-  var activeSettings = WowArmory.defaults;
 
   var slotLabels = {
     head: 'Head',
@@ -78,21 +75,22 @@
 
   function currentSettings() {
     return {
+      locale: locale.value,
       region: region.value,
       realm: realm.value,
-      character: character.value,
-      locale: activeSettings.locale
+      character: character.value
     };
   }
 
   function fillForm(settings) {
+    locale.value = settings.locale;
     region.value = settings.region;
     realm.value = settings.realm;
     character.value = settings.character;
   }
 
   function setMenuOpen(isOpen) {
-    popupMenu.classList.toggle('is-hidden', !isOpen);
+    form.classList.toggle('is-open', isOpen);
     menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   }
 
@@ -376,7 +374,6 @@
     }
 
     fillForm(cleanSettings);
-    activeSettings = cleanSettings;
     setStatus('Loading character...');
     status.classList.remove('is-hidden');
     profile.classList.add('is-hidden');
@@ -405,21 +402,21 @@
   });
 
   menuButton.addEventListener('click', function () {
-    setMenuOpen(popupMenu.classList.contains('is-hidden'));
+    setMenuOpen(!form.classList.contains('is-open'));
   });
 
   document.addEventListener('click', function (event) {
-    if (popupMenu.classList.contains('is-hidden')) {
+    if (!form.classList.contains('is-open')) {
       return;
     }
 
-    if (!popupMenu.contains(event.target) && !menuButton.contains(event.target)) {
+    if (!form.contains(event.target) && !menuButton.contains(event.target)) {
       setMenuOpen(false);
     }
   });
 
   document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && !popupMenu.classList.contains('is-hidden')) {
+    if (event.key === 'Escape' && form.classList.contains('is-open')) {
       setMenuOpen(false);
       menuButton.focus();
     }
@@ -429,19 +426,7 @@
     load(currentSettings());
   });
 
-  menuCharacter.addEventListener('click', function () {
-    setMenuOpen(false);
-    form.classList.add('is-open');
-    menuButton.setAttribute('aria-expanded', 'true');
-  });
-
-  menuOptions.addEventListener('click', function () {
-    setMenuOpen(false);
-    browser.runtime.openOptionsPage();
-  });
-
   WowArmory.getSettings().then(function (settings) {
-    activeSettings = settings;
     fillForm(settings);
     load(settings);
   });
