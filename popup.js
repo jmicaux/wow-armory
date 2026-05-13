@@ -579,6 +579,11 @@
       .trim();
   }
 
+  function isWowheadErrorText(value) {
+    var text = String(value || '').toLowerCase();
+    return !text || text.indexOf('request could not be satisfied') >= 0 || text.indexOf('error:') === 0;
+  }
+
   function decodeWowheadText(value) {
     var text = String(value || '');
 
@@ -602,27 +607,39 @@
   function parseWowheadItemNameFromPage(htmlText) {
     var h1Match = String(htmlText || '').match(/<h1[^>]*class=["'][^"']*(?:heading-size-1|heading-title|item-name)[^"']*["'][^>]*>([^<]+)<\/h1>/i);
     if (h1Match && h1Match[1]) {
-      return cleanWowheadPageTitle(decodeWowheadText(h1Match[1]));
+      var h1Name = cleanWowheadPageTitle(decodeWowheadText(h1Match[1]));
+      return isWowheadErrorText(h1Name) ? null : h1Name;
     }
 
     var dataNameMatch = String(htmlText || '').match(/(?:^|[,{]\s*)(?:name|itemName)\s*:\s*["']([^"']+)["']/i);
     if (dataNameMatch && dataNameMatch[1]) {
-      return cleanWowheadPageTitle(decodeWowheadText(dataNameMatch[1]));
+      var dataName = cleanWowheadPageTitle(decodeWowheadText(dataNameMatch[1]));
+      return isWowheadErrorText(dataName) ? null : dataName;
     }
 
     var titleMatch = String(htmlText || '').match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
     if (titleMatch && titleMatch[1]) {
-      return cleanWowheadPageTitle(decodeWowheadText(titleMatch[1]));
+      var ogName = cleanWowheadPageTitle(decodeWowheadText(titleMatch[1]));
+      return isWowheadErrorText(ogName) ? null : ogName;
     }
 
     var pageTitleMatch = String(htmlText || '').match(/<title>([^<]+)<\/title>/i);
-    return pageTitleMatch && pageTitleMatch[1] ? cleanWowheadPageTitle(decodeWowheadText(pageTitleMatch[1])) : null;
+    if (!pageTitleMatch || !pageTitleMatch[1]) {
+      return null;
+    }
+
+    var pageName = cleanWowheadPageTitle(decodeWowheadText(pageTitleMatch[1]));
+    return isWowheadErrorText(pageName) ? null : pageName;
   }
 
   function resolveLocalizedItemName(item) {
     var key = localizedItemKey(item);
     if (!item || !item.item_id) {
       return Promise.resolve(item && item.name ? item.name : '');
+    }
+
+    if (!item.original_name && item.name) {
+      item.original_name = item.name;
     }
 
     if (localizedItemResolved[key] && localizedItemNames[key]) {
@@ -646,7 +663,7 @@
             })
             .then(function (pageText) {
               var pageName = parseWowheadItemNameFromPage(pageText);
-              localizedItemNames[key] = decodeWowheadText(pageName || name || item.name || '');
+              localizedItemNames[key] = decodeWowheadText(pageName || name || item.original_name || item.name || '');
               localizedItemResolved[key] = Boolean(localizedItemNames[key]);
               item.localized_name = localizedItemNames[key];
               item.name = localizedItemNames[key];
@@ -654,7 +671,7 @@
             });
         }
 
-        localizedItemNames[key] = decodeWowheadText(name || item.name || '');
+        localizedItemNames[key] = decodeWowheadText(name || item.original_name || item.name || '');
         localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
@@ -662,7 +679,7 @@
       })
       .catch(function () {
         if (localeKey() === 'en-us' || localeKey() === 'en-gb') {
-          localizedItemNames[key] = decodeWowheadText(item.name || '');
+          localizedItemNames[key] = decodeWowheadText(item.original_name || item.name || '');
           localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         }
         item.localized_name = localizedItemNames[key];
@@ -822,7 +839,7 @@
 
   function localizedItemSlug(item) {
     var key = item && item.item_id ? localizedItemKey(item) : '';
-    var name = (item && item.localized_name) || (key && localizedItemNames[key]) || (item && item.name) || '';
+    var name = (item && item.localized_name) || (key && localizedItemNames[key]) || (item && item.original_name) || (item && item.name) || '';
     return name
       ? String(name)
         .trim()
