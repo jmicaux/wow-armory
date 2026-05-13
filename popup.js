@@ -1085,11 +1085,17 @@
     title.textContent = itemDisplayName(item);
     intro.appendChild(title);
 
+    if (item.item_level) {
+      var meta = document.createElement('p');
+      meta.className = 'equipment-detail-meta';
+      meta.textContent = 'Ilvl ' + String(item.item_level);
+      intro.appendChild(meta);
+    }
+
     header.appendChild(intro);
     equipmentDetail.appendChild(header);
 
     var lines = [
-      detailLine('Ilvl', item.item_level ? String(item.item_level) : null),
       detailLine(ui.enchantsGems, details.length ? details.join(' · ') : null),
     ].filter(Boolean);
 
