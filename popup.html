@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WoW Armory Lite</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="popup-body">
+  <main class="popup">
+    <header class="popup-header">
+      <div>
+        <p class="eyebrow">World of Warcraft</p>
+        <h1>Armory Lite</h1>
+      </div>
+      <button type="button" id="refresh-button" title="Refresh character">Refresh</button>
+    </header>
+
+    <form class="character-form" id="character-form">
+      <label>
+        <span>Region</span>
+        <select id="region" name="region">
+          <option value="eu">Europe</option>
+          <option value="us">North America</option>
+          <option value="kr">Korea</option>
+          <option value="tw">Taiwan</option>
+        </select>
+      </label>
+      <label>
+        <span>Realm</span>
+        <input id="realm" name="realm" type="text" autocomplete="off" placeholder="archimonde">
+      </label>
+      <label>
+        <span>Character</span>
+        <input id="character" name="character" type="text" autocomplete="off" placeholder="Poilgrês">
+      </label>
+      <button type="submit">Load</button>
+    </form>
+
+    <p class="status" id="status" role="status">Enter a character to load profile data.</p>
+
+    <section class="profile is-hidden" id="profile" aria-label="Character profile">
+      <div class="profile-main">
+        <img id="avatar" alt="" width="84" height="84">
+        <div>
+          <h2 id="profile-name"></h2>
+          <p id="profile-meta"></p>
+          <p id="profile-guild"></p>
+        </div>
+      </div>
+
+      <dl class="stats">
+        <div>
+          <dt>Item level</dt>
+          <dd id="item-level">-</dd>
+        </div>
+        <div>
+          <dt>Achievement points</dt>
+          <dd id="achievements">-</dd>
+        </div>
+        <div>
+          <dt>M+ score</dt>
+          <dd id="mplus-score">-</dd>
+        </div>
+      </dl>
+
+      <a class="profile-link" id="profile-link" href="#" target="_blank" rel="noopener">Open Raider.IO profile</a>
+      <a class="profile-link profile-link-secondary" id="official-link" href="#" target="_blank" rel="noopener">Open official Armory</a>
+    </section>
+
+    <section class="profile is-hidden" id="fallback-profile" aria-label="Character profile unavailable">
+      <div class="fallback-card">
+        <p class="eyebrow">Official Armory</p>
+        <h2 id="fallback-name"></h2>
+        <p id="fallback-meta"></p>
+        <p>Raider.IO does not currently expose this character. You can still open the official World of Warcraft profile.</p>
+      </div>
+      <a class="profile-link" id="fallback-official-link" href="#" target="_blank" rel="noopener">Open official Armory</a>
+    </section>
+
+    <footer class="popup-footer">
+      <button type="button" id="options-button">Options</button>
+    </footer>
+  </main>
+
+  <script src="browser-polyfill.js"></script>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

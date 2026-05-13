@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WoW Armory Lite Options</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="options-page">
+    <h1>WoW Armory Lite options</h1>
+    <p>Choose the default character shown when the extension opens.</p>
+
+    <form class="options-form" id="options-form">
+      <label>
+        <span>Region</span>
+        <select id="region" name="region">
+          <option value="eu">Europe</option>
+          <option value="us">North America</option>
+          <option value="kr">Korea</option>
+          <option value="tw">Taiwan</option>
+        </select>
+      </label>
+      <label>
+        <span>Realm slug</span>
+        <input id="realm" name="realm" type="text" placeholder="archimonde">
+      </label>
+      <label>
+        <span>Character name</span>
+        <input id="character" name="character" type="text" placeholder="Poilgrês">
+      </label>
+      <button type="submit">Save</button>
+    </form>
+
+    <p class="status" id="status" role="status"></p>
+  </main>
+
+  <script src="browser-polyfill.js"></script>
+  <script src="shared.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
