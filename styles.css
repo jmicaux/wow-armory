@@ -271,7 +271,7 @@ select {
 .equipment-item {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 3px;
   justify-items: center;
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -299,11 +299,16 @@ select {
 }
 
 .equipment-slot {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+  display: block;
+  max-width: 100%;
   overflow: hidden;
-  clip: rect(0 0 0 0);
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
