@@ -18,7 +18,9 @@
   var itemLevel = document.getElementById('item-level');
   var achievements = document.getElementById('achievements');
   var mplusScore = document.getElementById('mplus-score');
-  var equipmentList = document.getElementById('equipment-list');
+  var equipmentLeft = document.getElementById('equipment-left');
+  var equipmentRight = document.getElementById('equipment-right');
+  var equipmentDetail = document.getElementById('equipment-detail');
   var profileLink = document.getElementById('profile-link');
   var officialLink = document.getElementById('official-link');
 
@@ -41,14 +43,17 @@
     offhand: 'Off hand'
   };
 
-  var slotOrder = [
+  var leftSlots = [
     'head',
     'neck',
     'shoulder',
     'back',
     'chest',
     'wrist',
-    'hands',
+    'hands'
+  ];
+
+  var rightSlots = [
     'waist',
     'legs',
     'feet',
@@ -116,8 +121,121 @@
     return item && item.item_id ? 'https://www.wowhead.com/item=' + encodeURIComponent(item.item_id) : '#';
   }
 
+  function wowheadData(item) {
+    var params = [];
+
+    if (!item || !item.item_id) {
+      return '';
+    }
+
+    params.push('item=' + item.item_id);
+
+    if (item.item_level) {
+      params.push('ilvl=' + item.item_level);
+    }
+
+    if (Array.isArray(item.bonuses) && item.bonuses.length) {
+      params.push('bonus=' + item.bonuses.join(':'));
+    }
+
+    if (Array.isArray(item.gems) && item.gems.length) {
+      params.push('gems=' + item.gems.join(':'));
+    }
+
+    if (Array.isArray(item.enchants) && item.enchants.length) {
+      params.push('ench=' + item.enchants[0]);
+    }
+
+    return params.join('&');
+  }
+
+  function clearDetail() {
+    equipmentDetail.textContent = '';
+    var empty = document.createElement('p');
+    empty.className = 'equipment-detail-empty';
+    empty.textContent = 'Hover or focus an item to inspect details.';
+    equipmentDetail.appendChild(empty);
+  }
+
+  function detailLine(label, value) {
+    if (!value) {
+      return null;
+    }
+
+    var row = document.createElement('div');
+    row.className = 'equipment-detail-line';
+
+    var term = document.createElement('span');
+    term.textContent = label;
+    row.appendChild(term);
+
+    var description = document.createElement('strong');
+    description.textContent = value;
+    row.appendChild(description);
+
+    return row;
+  }
+
+  function showItemDetails(slot, item) {
+    var details = detailNames(item.enchants_detail).concat(detailNames(item.gems_detail));
+    equipmentDetail.textContent = '';
+
+    var header = document.createElement('div');
+    header.className = 'equipment-detail-header';
+
+    var image = document.createElement('img');
+    image.src = iconUrl(item.icon);
+    image.alt = '';
+    image.width = 56;
+    image.height = 56;
+    header.appendChild(image);
+
+    var intro = document.createElement('div');
+
+    var slotLabel = document.createElement('p');
+    slotLabel.className = 'equipment-detail-slot';
+    slotLabel.textContent = slotLabels[slot] || slot;
+    intro.appendChild(slotLabel);
+
+    var title = document.createElement('h4');
+    title.className = 'equipment-detail-name ' + qualityClass(item);
+    title.textContent = item.name || 'Unknown item';
+    intro.appendChild(title);
+
+    header.appendChild(intro);
+    equipmentDetail.appendChild(header);
+
+    var lines = [
+      detailLine('Item level', item.item_level ? String(item.item_level) : null),
+      detailLine('Item ID', item.item_id ? String(item.item_id) : null),
+      detailLine('Quality', item.item_quality !== undefined ? String(item.item_quality) : null),
+      detailLine('Enchants / gems', details.length ? details.join(' · ') : null),
+      detailLine('Bonuses', Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(', ') : null)
+    ].filter(Boolean);
+
+    var list = document.createElement('div');
+    list.className = 'equipment-detail-lines';
+    lines.forEach(function (line) {
+      list.appendChild(line);
+    });
+    equipmentDetail.appendChild(list);
+
+    var link = document.createElement('a');
+    link.className = 'profile-link profile-link-secondary';
+    link.href = itemUrl(item);
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Open on Wowhead';
+    var data = wowheadData(item);
+    if (data) {
+      link.setAttribute('data-wowhead', data);
+      link.setAttribute('data-wh-rename-link', 'true');
+    }
+    equipmentDetail.appendChild(link);
+  }
+
   function createItem(slot, item) {
-    var row = document.createElement('article');
+    var row = document.createElement('div');
     row.className = 'equipment-item ' + qualityClass(item);
 
     var image = document.createElement('img');
@@ -127,23 +245,10 @@
     image.height = 40;
     row.appendChild(image);
 
-    var body = document.createElement('div');
-    body.className = 'equipment-body';
-
-    var header = document.createElement('div');
-    header.className = 'equipment-row';
-
     var label = document.createElement('span');
     label.className = 'equipment-slot';
     label.textContent = slotLabels[slot] || slot;
-    header.appendChild(label);
-
-    var level = document.createElement('span');
-    level.className = 'equipment-ilvl';
-    level.textContent = item.item_level ? 'ilvl ' + item.item_level : 'ilvl -';
-    header.appendChild(level);
-
-    body.appendChild(header);
+    row.appendChild(label);
 
     var link = document.createElement('a');
     link.className = 'equipment-name';
@@ -151,34 +256,49 @@
     link.target = '_blank';
     link.rel = 'noopener';
     link.textContent = item.name || 'Unknown item';
-    body.appendChild(link);
-
-    var details = detailNames(item.enchants_detail).concat(detailNames(item.gems_detail));
-    if (details.length) {
-      var meta = document.createElement('p');
-      meta.className = 'equipment-meta';
-      meta.textContent = details.join(' · ');
-      body.appendChild(meta);
+    var data = wowheadData(item);
+    if (data) {
+      link.setAttribute('data-wowhead', data);
+      link.setAttribute('data-wh-rename-link', 'true');
     }
+    row.appendChild(link);
 
-    row.appendChild(body);
+    var level = document.createElement('span');
+    level.className = 'equipment-ilvl';
+    level.textContent = item.item_level ? 'ilvl ' + item.item_level : 'ilvl -';
+    row.appendChild(level);
+
+    row.addEventListener('mouseenter', function () {
+      showItemDetails(slot, item);
+    });
+    link.addEventListener('focus', function () {
+      showItemDetails(slot, item);
+    });
     return row;
   }
 
   function renderEquipment(items) {
-    equipmentList.textContent = '';
+    equipmentLeft.textContent = '';
+    equipmentRight.textContent = '';
+    clearDetail();
 
     if (!items) {
       var empty = document.createElement('p');
       empty.className = 'equipment-empty';
       empty.textContent = 'No equipment data available.';
-      equipmentList.appendChild(empty);
+      equipmentDetail.textContent = '';
+      equipmentDetail.appendChild(empty);
       return;
     }
 
-    slotOrder.forEach(function (slot) {
+    leftSlots.forEach(function (slot) {
       if (items[slot]) {
-        equipmentList.appendChild(createItem(slot, items[slot]));
+        equipmentLeft.appendChild(createItem(slot, items[slot]));
+      }
+    });
+    rightSlots.forEach(function (slot) {
+      if (items[slot]) {
+        equipmentRight.appendChild(createItem(slot, items[slot]));
       }
     });
   }

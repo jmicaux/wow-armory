@@ -66,7 +66,13 @@
 
       <section class="equipment" aria-labelledby="equipment-title">
         <h3 id="equipment-title">Equipment</h3>
-        <div class="equipment-list" id="equipment-list"></div>
+        <div class="equipment-grid">
+          <div class="equipment-column" id="equipment-left" aria-label="Left equipment slots"></div>
+          <aside class="equipment-detail" id="equipment-detail" aria-live="polite">
+            <p class="equipment-detail-empty">Hover or focus an item to inspect details.</p>
+          </aside>
+          <div class="equipment-column" id="equipment-right" aria-label="Right equipment slots"></div>
+        </div>
       </section>
 
       <a class="profile-link" id="profile-link" href="#" target="_blank" rel="noopener">Open Raider.IO profile</a>
