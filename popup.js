@@ -29,6 +29,7 @@
   var lastFallbackSettings = null;
   var lastFallbackMessage = '';
   var localizedItemNames = {};
+  var localizedItemResolved = {};
   var localizedItemRequests = {};
   var activeDetailItemKey = '';
 
@@ -604,7 +605,7 @@
       return Promise.resolve(item && item.name ? item.name : '');
     }
 
-    if (localizedItemNames[key]) {
+    if (localizedItemResolved[key] && localizedItemNames[key]) {
       return Promise.resolve(localizedItemNames[key]);
     }
 
@@ -626,6 +627,7 @@
             .then(function (pageText) {
               var pageName = parseWowheadItemNameFromPage(pageText);
               localizedItemNames[key] = pageName || name || item.name || '';
+              localizedItemResolved[key] = Boolean(localizedItemNames[key]);
               item.localized_name = localizedItemNames[key];
               item.name = localizedItemNames[key];
               return localizedItemNames[key];
@@ -633,15 +635,21 @@
         }
 
         localizedItemNames[key] = name || item.name || '';
+        localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
         return localizedItemNames[key];
       })
       .catch(function () {
-        localizedItemNames[key] = item.name || '';
+        if (localeKey() === 'en-us' || localeKey() === 'en-gb') {
+          localizedItemNames[key] = item.name || '';
+          localizedItemResolved[key] = Boolean(localizedItemNames[key]);
+        }
         item.localized_name = localizedItemNames[key];
-        item.name = localizedItemNames[key];
-        return localizedItemNames[key];
+        if (localizedItemNames[key]) {
+          item.name = localizedItemNames[key];
+        }
+        return localizedItemNames[key] || item.name || '';
       })
       .finally(function () {
         delete localizedItemRequests[key];
@@ -1006,6 +1014,12 @@
       row.addEventListener('focus', function () {
         showItemDetails(slot, item);
       });
+      resolveLocalizedItemName(item).then(function (name) {
+        if (name) {
+          row.setAttribute('aria-label', (slotLabels[slot] || slot) + ': ' + name);
+          row.title = name;
+        }
+      });
     }
     return row;
   }
@@ -1160,12 +1174,13 @@
     load(settings);
   });
 
-  locale.addEventListener('change', function () {
-    localizedItemNames = {};
-    localizedItemRequests = {};
-    applyLocale();
-    if (lastProfileData && !profile.classList.contains('is-hidden')) {
-      clearLocalizedItemNames(lastProfileData.gear && lastProfileData.gear.items);
+    locale.addEventListener('change', function () {
+      localizedItemNames = {};
+      localizedItemResolved = {};
+      localizedItemRequests = {};
+      applyLocale();
+      if (lastProfileData && !profile.classList.contains('is-hidden')) {
+        clearLocalizedItemNames(lastProfileData.gear && lastProfileData.gear.items);
       renderProfile(lastProfileData);
     } else if (lastFallbackSettings && !fallbackProfile.classList.contains('is-hidden')) {
       renderFallback(lastFallbackSettings, lastFallbackMessage);
