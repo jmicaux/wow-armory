@@ -13,10 +13,17 @@
         <p class="eyebrow">World of Warcraft</p>
         <h1>Armory Lite</h1>
       </div>
-      <button type="button" id="refresh-button" title="Refresh character">Refresh</button>
+      <div class="header-actions">
+        <button class="menu-toggle" type="button" id="menu-button" aria-label="Change character" aria-controls="character-form" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+        <button type="button" id="refresh-button" title="Refresh character">Refresh</button>
+      </div>
     </header>
 
-    <form class="character-form" id="character-form">
+    <form class="character-form" id="character-form" aria-label="Change character">
       <label>
         <span>Region</span>
         <select id="region" name="region">

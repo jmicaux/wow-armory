@@ -1,9 +1,11 @@
 (function () {
+  var popup = document.querySelector('.popup');
   var form = document.getElementById('character-form');
   var region = document.getElementById('region');
   var realm = document.getElementById('realm');
   var character = document.getElementById('character');
   var status = document.getElementById('status');
+  var menuButton = document.getElementById('menu-button');
   var refreshButton = document.getElementById('refresh-button');
   var optionsButton = document.getElementById('options-button');
   var profile = document.getElementById('profile');
@@ -82,6 +84,16 @@
     region.value = settings.region;
     realm.value = settings.realm;
     character.value = settings.character;
+  }
+
+  function setMenuOpen(isOpen) {
+    form.classList.toggle('is-open', isOpen);
+    menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  function enableCharacterMode() {
+    popup.classList.add('has-character');
+    setMenuOpen(false);
   }
 
   function getScore(data) {
@@ -349,6 +361,7 @@
 
     fillForm(cleanSettings);
     setStatus('Loading character...');
+    status.classList.remove('is-hidden');
     profile.classList.add('is-hidden');
     fallbackProfile.classList.add('is-hidden');
 
@@ -359,16 +372,40 @@
       .then(function (data) {
         renderProfile(data);
         profile.classList.remove('is-hidden');
+        enableCharacterMode();
         setStatus('Character sheet loaded.');
+        status.classList.add('is-hidden');
       })
       .catch(function (error) {
         renderFallback(cleanSettings, error.message);
+        enableCharacterMode();
       });
   }
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     load(currentSettings());
+  });
+
+  menuButton.addEventListener('click', function () {
+    setMenuOpen(!form.classList.contains('is-open'));
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!popup.classList.contains('has-character') || !form.classList.contains('is-open')) {
+      return;
+    }
+
+    if (!form.contains(event.target) && !menuButton.contains(event.target)) {
+      setMenuOpen(false);
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && form.classList.contains('is-open')) {
+      setMenuOpen(false);
+      menuButton.focus();
+    }
   });
 
   refreshButton.addEventListener('click', function () {
