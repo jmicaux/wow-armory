@@ -143,14 +143,19 @@ h3 {
 }
 
 .character-form,
-.options-form,
-.profile {
+.options-form {
   display: grid;
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
   padding: 10px;
+}
+
+.profile {
+  display: grid;
+  gap: 8px;
+  padding: 0;
 }
 
 .has-character .character-form {
@@ -234,10 +239,8 @@ select {
 }
 
 .stats div {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--soft);
-  padding: 6px;
+  border-top: 1px solid var(--line);
+  padding: 6px 0 0;
 }
 
 .stats dt {
