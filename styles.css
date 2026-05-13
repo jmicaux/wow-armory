@@ -427,6 +427,9 @@ select {
   justify-content: center;
   justify-items: center;
   margin-top: -2px;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
 }
 
 .equipment-detail-line strong {
