@@ -554,7 +554,6 @@
     form.querySelectorAll('label span')[2].textContent = ui.realm;
     form.querySelectorAll('label span')[3].textContent = ui.character;
     form.querySelector('button[type="submit"]').textContent = ui.load;
-    document.getElementById('equipment-title').textContent = ui.equipment;
     document.querySelector('.status').textContent = ui.statusIdle;
     document.querySelector('#profile-link').textContent = ui.openRaidio;
     document.querySelector('#official-link').textContent = ui.openOfficial;
