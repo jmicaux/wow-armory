@@ -399,20 +399,20 @@
 
   var topSlots = [
     'head',
-    'neck',
-    'shoulder',
-    'back'
+    'neck'
   ];
 
   var leftSlots = [
+    'shoulder',
+    'back',
     'chest',
     'wrist',
-    'hands',
-    'waist',
-    'legs'
+    'hands'
   ];
 
   var rightSlots = [
+    'waist',
+    'legs',
     'feet',
     'finger1',
     'finger2',
