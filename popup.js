@@ -30,6 +30,7 @@
   var lastFallbackMessage = '';
   var localizedItemNames = {};
   var localizedItemResolved = {};
+  var localizedItemStats = {};
   var localizedItemRequests = {};
   var activeDetailItemKey = '';
 
@@ -655,6 +656,42 @@
     return null;
   }
 
+  function parseWowheadTooltipLines(xmlText) {
+    var doc = new DOMParser().parseFromString(String(xmlText || ''), 'application/xml');
+    if (doc.getElementsByTagName('parsererror').length) {
+      return [];
+    }
+
+    var tooltipNode = doc.getElementsByTagName('htmlTooltip')[0];
+    if (!tooltipNode) {
+      return [];
+    }
+
+    var serialized = new XMLSerializer().serializeToString(tooltipNode);
+    var html = serialized
+      .replace(/^<htmlTooltip[^>]*>/i, '')
+      .replace(/<\/htmlTooltip>$/i, '');
+
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+
+    var rows = [];
+    wrapper.querySelectorAll('tr').forEach(function (tr) {
+      var text = decodeWowheadText(String(tr.textContent || '').replace(/\s+/g, ' ').trim());
+      if (text) {
+        rows.push(text);
+      }
+    });
+
+    return rows;
+  }
+
+  function wowheadStatLines(tooltipLines) {
+    return (tooltipLines || []).filter(function (line) {
+      return /^\+/.test(line) || /augmente votre score/i.test(line) || /increases your score/i.test(line);
+    });
+  }
+
   function resolveLocalizedItemName(item) {
     var key = localizedItemKey(item);
     if (!item || !item.item_id) {
@@ -683,6 +720,13 @@
         return response.text();
       })
       .then(function (text) {
+        var tooltipLines = parseWowheadTooltipLines(text);
+        var statLines = wowheadStatLines(tooltipLines);
+        if (statLines.length) {
+          localizedItemStats[key] = statLines;
+          item.localized_stats = statLines;
+        }
+
         var name = parseWowheadItemName(text);
         if (!name || (localeKey() !== 'en-us' && localeKey() !== 'en-gb' && item.name && name === item.name)) {
           return fetch(localizedItemPageUrl(item), wowheadFetchOptions())
@@ -699,6 +743,9 @@
               localizedItemResolved[key] = Boolean(localizedItemNames[key]);
               item.localized_name = localizedItemNames[key];
               item.name = localizedItemNames[key];
+              if (localizedItemStats[key] && !item.localized_stats) {
+                item.localized_stats = localizedItemStats[key];
+              }
               return localizedItemNames[key];
             });
         }
@@ -710,6 +757,9 @@
         localizedItemResolved[key] = Boolean(localizedItemNames[key]);
         item.localized_name = localizedItemNames[key];
         item.name = localizedItemNames[key];
+        if (localizedItemStats[key] && !item.localized_stats) {
+          item.localized_stats = localizedItemStats[key];
+        }
         return localizedItemNames[key];
       })
       .catch(function () {
@@ -722,6 +772,9 @@
           delete localizedItemResolved[key];
         }
         item.localized_name = localizedItemNames[key];
+        if (localizedItemStats[key] && !item.localized_stats) {
+          item.localized_stats = localizedItemStats[key];
+        }
         if (localizedItemNames[key]) {
           item.name = localizedItemNames[key];
         }
@@ -755,6 +808,9 @@
     Object.keys(items).forEach(function (slot) {
       if (items[slot] && items[slot].localized_name) {
         delete items[slot].localized_name;
+      }
+      if (items[slot] && items[slot].localized_stats) {
+        delete items[slot].localized_stats;
       }
     });
   }
@@ -1025,6 +1081,29 @@
     });
     equipmentDetail.appendChild(list);
 
+    var stats = item.localized_stats || localizedItemStats[activeDetailItemKey] || [];
+    var statsBlock = document.createElement('div');
+    statsBlock.className = 'equipment-wowhead-stats';
+    equipmentDetail.appendChild(statsBlock);
+
+    function renderStats(lines) {
+      statsBlock.textContent = '';
+      if (!lines.length) {
+        statsBlock.classList.add('is-hidden');
+        return;
+      }
+
+      statsBlock.classList.remove('is-hidden');
+      lines.forEach(function (line) {
+        var row = document.createElement('p');
+        row.className = 'equipment-wowhead-stat';
+        row.textContent = line;
+        statsBlock.appendChild(row);
+      });
+    }
+
+    renderStats(stats);
+
     var link = document.createElement('a');
     link.className = 'profile-link profile-link-secondary wowhead-link';
     link.href = itemUrl(item);
@@ -1041,6 +1120,9 @@
     resolveLocalizedItemName(item).then(function (name) {
       if (activeDetailItemKey === localizedItemKey(item) && name) {
         title.textContent = name;
+      }
+      if (activeDetailItemKey === localizedItemKey(item)) {
+        renderStats(item.localized_stats || localizedItemStats[activeDetailItemKey] || []);
       }
     });
   }
@@ -1252,6 +1334,7 @@
     locale.addEventListener('change', function () {
       localizedItemNames = {};
       localizedItemResolved = {};
+      localizedItemStats = {};
       localizedItemRequests = {};
       applyLocale();
       if (lastProfileData && !profile.classList.contains('is-hidden')) {

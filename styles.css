@@ -506,6 +506,23 @@ select {
   font-size: 0.78rem;
 }
 
+.equipment-wowhead-stats {
+  display: grid;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.equipment-wowhead-stats.is-hidden {
+  display: none;
+}
+
+.equipment-wowhead-stat {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
 .equipment-weapons {
   display: grid;
   grid-column: 1 / -1;
