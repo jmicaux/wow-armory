@@ -20,6 +20,11 @@ var WowArmory = (function () {
     'zh-tw'
   ];
 
+  var CHARACTER_CACHE_TTL_MS = 30 * 60 * 1000;
+  var CHARACTER_STALE_TTL_MS = 24 * 60 * 60 * 1000;
+  var FORCE_REFRESH_COOLDOWN_MS = 30 * 1000;
+  var pendingCharacterRequests = {};
+
   function cleanSlug(value) {
     return String(value || '').trim().toLowerCase().replace(/\s+/g, '-');
   }
@@ -69,16 +74,64 @@ var WowArmory = (function () {
     return 'https://raider.io/api/v1/characters/profile?' + params.toString();
   }
 
-  function officialProfileUrl(settings) {
-    return [
-      'https://worldofwarcraft.blizzard.com/' + cleanLocale(settings.locale) + '/character',
-      encodeURIComponent(settings.region),
-      encodeURIComponent(cleanSlug(settings.realm)),
-      encodeURIComponent(cleanName(settings.character))
-    ].join('/');
+  function cacheGet(key) {
+    return browser.storage.local.get(key).then(function (items) {
+      return items[key] || null;
+    });
   }
 
-  function loadCharacter(settings) {
+  function cacheSet(key, value) {
+    var item = {};
+    item[key] = value;
+    return browser.storage.local.set(item).then(function () {
+      return value && value.data;
+    });
+  }
+
+  function loadCached(key, ttlMs, fetcher, staleTtlMs) {
+    return cacheGet(key).then(function (cached) {
+      if (isFresh(cached, ttlMs)) {
+        return cached.data;
+      }
+
+      return fetcher()
+        .then(function (data) {
+          return cacheSet(key, {
+            fetchedAt: Date.now(),
+            data: data
+          }).then(function () {
+            return data;
+          });
+        })
+        .catch(function (error) {
+          if (isFresh(cached, staleTtlMs || ttlMs)) {
+            return cached.data;
+          }
+
+          throw error;
+        });
+    });
+  }
+
+  function characterCacheKey(settings) {
+    return [
+      'character',
+      cleanSlug(settings.region),
+      cleanSlug(settings.realm),
+      cleanName(settings.character).toLowerCase(),
+      cleanLocale(settings.locale)
+    ].join(':');
+  }
+
+  function characterRefreshKey(settings) {
+    return characterCacheKey(settings) + ':refresh';
+  }
+
+  function isFresh(entry, ttlMs) {
+    return entry && entry.data && Date.now() - entry.fetchedAt < ttlMs;
+  }
+
+  function fetchCharacter(settings) {
     return fetch(characterUrl(settings), {
       headers: {
         accept: 'application/json'
@@ -93,6 +146,67 @@ var WowArmory = (function () {
     });
   }
 
+  function officialProfileUrl(settings) {
+    return [
+      'https://worldofwarcraft.blizzard.com/' + cleanLocale(settings.locale) + '/character',
+      encodeURIComponent(settings.region),
+      encodeURIComponent(cleanSlug(settings.realm)),
+      encodeURIComponent(cleanName(settings.character))
+    ].join('/');
+  }
+
+  function loadCharacter(settings, options) {
+    var cacheKey = characterCacheKey(settings);
+    var refreshKey = characterRefreshKey(settings);
+    var forceRefresh = Boolean(options && options.forceRefresh);
+
+    if (pendingCharacterRequests[cacheKey]) {
+      return pendingCharacterRequests[cacheKey];
+    }
+
+    pendingCharacterRequests[cacheKey] = cacheGet(cacheKey).then(function (cached) {
+      if (!forceRefresh && isFresh(cached, CHARACTER_CACHE_TTL_MS)) {
+        return cached.data;
+      }
+
+      return cacheGet(refreshKey).then(function (lastRefresh) {
+        if (
+          forceRefresh &&
+          lastRefresh &&
+          Date.now() - lastRefresh.fetchedAt < FORCE_REFRESH_COOLDOWN_MS &&
+          cached &&
+          cached.data
+        ) {
+          return cached.data;
+        }
+
+        return fetchCharacter(settings)
+          .then(function (data) {
+            return Promise.all([
+              cacheSet(cacheKey, {
+                fetchedAt: Date.now(),
+                data: data
+              }),
+              forceRefresh ? cacheSet(refreshKey, { fetchedAt: Date.now(), data: true }) : Promise.resolve()
+            ]).then(function () {
+              return data;
+            });
+          })
+          .catch(function (error) {
+            if (isFresh(cached, CHARACTER_STALE_TTL_MS)) {
+              return cached.data;
+            }
+
+            throw error;
+          });
+      });
+    }).finally(function () {
+      delete pendingCharacterRequests[cacheKey];
+    });
+
+    return pendingCharacterRequests[cacheKey];
+  }
+
   return {
     defaults: defaults,
     cleanSlug: cleanSlug,
@@ -101,6 +215,7 @@ var WowArmory = (function () {
     getSettings: getSettings,
     saveSettings: saveSettings,
     loadCharacter: loadCharacter,
-    officialProfileUrl: officialProfileUrl
+    officialProfileUrl: officialProfileUrl,
+    loadCached: loadCached
   };
 }());

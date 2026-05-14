@@ -34,6 +34,8 @@
   var localizedItemStats = {};
   var localizedItemRequests = {};
   var activeDetailItemKey = '';
+  var WOWHEAD_CACHE_TTL_MS = 14 * 24 * 60 * 60 * 1000;
+  var WOWHEAD_STALE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
   var i18n = {
     'en-us': {
@@ -634,6 +636,23 @@
     };
   }
 
+  function cachedText(cacheKey, url, options) {
+    return WowArmory.loadCached(
+      cacheKey,
+      WOWHEAD_CACHE_TTL_MS,
+      function () {
+        return fetch(url, options).then(function (response) {
+          if (!response.ok) {
+            throw new Error('Unable to load cached text.');
+          }
+
+          return response.text();
+        });
+      },
+      WOWHEAD_STALE_TTL_MS
+    );
+  }
+
   function parseWowheadItemName(xmlText) {
     var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
     if (doc.getElementsByTagName('parsererror').length) {
@@ -788,10 +807,7 @@
       return localizedItemRequests[key];
     }
 
-    localizedItemRequests[key] = fetch(localizedItemUrl(item), wowheadFetchOptions())
-      .then(function (response) {
-        return response.text();
-      })
+    localizedItemRequests[key] = cachedText('wowhead:xml:' + key, localizedItemUrl(item), wowheadFetchOptions())
       .then(function (text) {
         var tooltipLines = parseWowheadTooltipLines(text);
         var statLines = wowheadStatLines(tooltipLines);
@@ -802,10 +818,7 @@
 
         var name = parseWowheadItemName(text);
         if (!name || (localeKey() !== 'en-us' && localeKey() !== 'en-gb' && item.name && name === item.name)) {
-          return fetch(localizedItemPageUrl(item), wowheadFetchOptions())
-            .then(function (response) {
-              return response.text();
-            })
+          return cachedText('wowhead:page:' + key, localizedItemPageUrl(item), wowheadFetchOptions())
             .then(function (pageText) {
               var pageName = parseWowheadItemNameFromPage(pageText);
               var resolved = decodeWowheadText(pageName || name || item.original_name || item.name || '');
@@ -1350,7 +1363,7 @@
     setStatus(lastFallbackMessage, true);
   }
 
-  function load(settings) {
+  function load(settings, options) {
     var cleanSettings = {
       region: settings.region,
       realm: WowArmory.cleanSlug(settings.realm),
@@ -1371,7 +1384,7 @@
 
     return WowArmory.saveSettings(cleanSettings)
       .then(function () {
-        return WowArmory.loadCharacter(cleanSettings);
+        return WowArmory.loadCharacter(cleanSettings, options);
       })
       .then(function (data) {
         return renderProfile(data).then(function () {
@@ -1417,7 +1430,7 @@
   });
 
   refreshButton.addEventListener('click', function () {
-    load(currentSettings());
+    load(currentSettings(), { forceRefresh: true });
   });
 
   WowArmory.getSettings().then(function (settings) {
