@@ -78,6 +78,58 @@ var WowArmory = (function () {
     ].join('/');
   }
 
+  function parseOfficialProfile(htmlText) {
+    var marker = 'var characterProfileInitialState = ';
+    var start = String(htmlText || '').indexOf(marker);
+    var end;
+    var jsonText;
+    var state;
+    var character;
+
+    if (start < 0) {
+      return {};
+    }
+
+    start += marker.length;
+    end = htmlText.indexOf('</script>', start);
+    if (end < 0) {
+      return {};
+    }
+
+    jsonText = htmlText.slice(start, end).replace(/;\s*$/, '');
+
+    try {
+      state = JSON.parse(jsonText);
+    } catch (error) {
+      return {};
+    }
+
+    character = state && state.character;
+    if (!character) {
+      return {};
+    }
+
+    return {
+      level: character.level || null,
+      achievement_points: character.achievement || null,
+      guild: character.guild && character.guild.name ? { name: character.guild.name } : null
+    };
+  }
+
+  function loadOfficialProfile(settings) {
+    return fetch(officialProfileUrl(settings), {
+      credentials: 'omit'
+    }).then(function (response) {
+      if (!response.ok) {
+        return {};
+      }
+
+      return response.text().then(parseOfficialProfile);
+    }).catch(function () {
+      return {};
+    });
+  }
+
   function loadCharacter(settings) {
     return fetch(characterUrl(settings), {
       headers: {
@@ -89,6 +141,14 @@ var WowArmory = (function () {
           throw new Error(data.message || 'Unable to load character.');
         }
         return data;
+      });
+    }).then(function (data) {
+      return loadOfficialProfile(settings).then(function (officialData) {
+        return Object.assign({}, data, {
+          level: data.level || officialData.level,
+          achievement_points: data.achievement_points || officialData.achievement_points,
+          guild: data.guild || officialData.guild
+        });
       });
     });
   }

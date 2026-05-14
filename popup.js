@@ -17,6 +17,7 @@
   var profileName = document.getElementById('profile-name');
   var profileMeta = document.getElementById('profile-meta');
   var profileGuild = document.getElementById('profile-guild');
+  var profileStats = document.getElementById('profile-stats');
   var equipmentTop = document.getElementById('equipment-top');
   var equipmentLeft = document.getElementById('equipment-left');
   var equipmentRight = document.getElementById('equipment-right');
@@ -50,6 +51,8 @@
       equipment: 'Equipment',
       inspectHint: 'Hover or focus an item to inspect details.',
       noEquipment: 'No equipment data available.',
+      level: 'Level',
+      achievementPoints: 'Achievement points',
       itemLevel: 'Item level',
       itemId: 'Item ID',
       quality: 'Quality',
@@ -95,6 +98,8 @@
       equipment: 'Équipement',
       inspectHint: 'Survolez ou sélectionnez un objet pour afficher le détail.',
       noEquipment: 'Aucune donnée d’équipement disponible.',
+      level: 'Niveau',
+      achievementPoints: 'Points de hauts faits',
       itemLevel: 'Niveau d’objet',
       itemId: 'ID objet',
       quality: 'Qualité',
@@ -140,6 +145,8 @@
       equipment: 'Ausrüstung',
       inspectHint: 'Element berühren oder fokussieren, um Details zu sehen.',
       noEquipment: 'Keine Ausrüstungsdaten verfügbar.',
+      level: 'Stufe',
+      achievementPoints: 'Erfolgspunkte',
       itemLevel: 'Gegenstandsstufe',
       itemId: 'Gegenstands-ID',
       quality: 'Qualität',
@@ -185,6 +192,8 @@
       equipment: 'Equipo',
       inspectHint: 'Pasa el cursor o enfoca un objeto para ver los detalles.',
       noEquipment: 'No hay datos de equipo disponibles.',
+      level: 'Nivel',
+      achievementPoints: 'Puntos de logro',
       itemLevel: 'Nivel de objeto',
       itemId: 'ID de objeto',
       quality: 'Calidad',
@@ -230,6 +239,8 @@
       equipment: 'Equipamento',
       inspectHint: 'Passe o cursor ou foque um item para ver os detalhes.',
       noEquipment: 'Nenhum dado de equipamento disponível.',
+      level: 'Nível',
+      achievementPoints: 'Pontos de conquista',
       itemLevel: 'Nível do item',
       itemId: 'ID do item',
       quality: 'Qualidade',
@@ -275,6 +286,8 @@
       equipment: 'Экипировка',
       inspectHint: 'Наведите курсор или сфокусируйте предмет, чтобы увидеть детали.',
       noEquipment: 'Данные об экипировке недоступны.',
+      level: 'Уровень',
+      achievementPoints: 'Очки достижений',
       itemLevel: 'Уровень предмета',
       itemId: 'ID предмета',
       quality: 'Качество',
@@ -320,6 +333,8 @@
       equipment: '장비',
       inspectHint: '아이템에 마우스를 올리거나 포커스하면 자세한 정보를 볼 수 있습니다.',
       noEquipment: '장비 데이터가 없습니다.',
+      level: '레벨',
+      achievementPoints: '업적 점수',
       itemLevel: '아이템 레벨',
       itemId: '아이템 ID',
       quality: '품질',
@@ -365,6 +380,8 @@
       equipment: '裝備',
       inspectHint: '將滑鼠移到物品上或聚焦即可查看詳細資訊。',
       noEquipment: '沒有可用的裝備資料。',
+      level: '等級',
+      achievementPoints: '成就點數',
       itemLevel: '物品等級',
       itemId: '物品 ID',
       quality: '品質',
@@ -450,6 +467,39 @@
   function setStatus(message, isError) {
     status.textContent = message;
     status.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function formatNumber(value) {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    return new Intl.NumberFormat(localeKey()).format(Number(value));
+  }
+
+  function addProfileStat(label, value) {
+    var term;
+    var description;
+
+    if (value === null || value === undefined || value === '') {
+      return;
+    }
+
+    term = document.createElement('dt');
+    term.textContent = label;
+
+    description = document.createElement('dd');
+    description.textContent = value;
+
+    profileStats.appendChild(term);
+    profileStats.appendChild(description);
+  }
+
+  function renderProfileStats(data) {
+    profileStats.textContent = '';
+    addProfileStat(ui.level, data.level);
+    addProfileStat(ui.itemLevel, data.gear && data.gear.item_level_equipped);
+    addProfileStat(ui.achievementPoints, formatNumber(data.achievement_points));
   }
 
   function setIconLabel(node, iconText, label) {
@@ -1274,6 +1324,7 @@
       data.faction
     ].filter(Boolean).join(' · ');
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
+    renderProfileStats(data);
     profileLink.href = data.profile_url || '#';
     officialLink.href = WowArmory.officialProfileUrl({
       region: data.region || currentSettings().region,

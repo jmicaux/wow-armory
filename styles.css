@@ -261,6 +261,31 @@ select {
   white-space: nowrap;
 }
 
+.profile-stats {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 3px 10px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.profile-stats dt,
+.profile-stats dd {
+  margin: 0;
+}
+
+.profile-stats dt {
+  font-weight: 700;
+}
+
+.profile-stats dd {
+  min-width: 0;
+  color: var(--text);
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
 .profile-link {
   display: inline-flex;
   align-items: center;
