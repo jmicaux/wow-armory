@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check JS syntax
+        run: |
+          find . -name '*.js' -not -path './dist/*' -not -path './.git/*' -print0 \
+            | xargs -0 -r -n1 node --check
+
+      - name: Validate manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8'))"
+
+      - name: web-ext lint
+        run: >
+          npx --yes web-ext@latest lint --source-dir . --self-hosted
+          --ignore-files index.html og-image.png screenshot.png demo-shim.js 'dist/**'
