@@ -80,6 +80,12 @@ wow-armory/
 - When Raider.IO has no public data for the configured character, the popup falls
   back to a direct link to the official World of Warcraft Armory profile.
 
+## Quality
+
+This project follows a documented quality review process covering accessibility, security, performance and code quality.
+
+See [QUALITY.md](QUALITY.md).
+
 ## License
 
 Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you are free to fork,
