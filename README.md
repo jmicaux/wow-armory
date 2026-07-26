@@ -7,6 +7,8 @@ A rebuild inspired by the old Netvibes WoW Armory widget that disappeared with t
 
 **🔗 Live preview: [jmicaux.github.io/wow-armory](https://jmicaux.github.io/wow-armory/)**
 
+![WoW Armory Lite — the toolbar popup showing a live character summary from Raider.IO](screenshot.png)
+
 If you enjoy this extension, you can support it:
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy_me_a_coffee-ffdd00?style=flat-square&logo=buymeacoffee&logoColor=1a1a1a)](https://buymeacoffee.com/jmicaux)
