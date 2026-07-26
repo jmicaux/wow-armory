@@ -741,8 +741,9 @@
       .replace(/^<htmlTooltip[^>]*>/i, '')
       .replace(/<\/htmlTooltip>$/i, '');
 
-    var wrapper = document.createElement('div');
-    wrapper.innerHTML = html;
+    // Parse the Wowhead tooltip HTML in an inert DOMParser document (no resource loading,
+    // no script execution) rather than assigning innerHTML on a live-created element.
+    var wrapper = new DOMParser().parseFromString(html, 'text/html').body;
 
     var seen = {};
     var rows = [];
@@ -1338,7 +1339,7 @@
     ].filter(Boolean).join(' · ');
     profileGuild.textContent = data.guild && data.guild.name ? '<' + data.guild.name + '>' : '';
     renderProfileStats(data);
-    profileLink.href = data.profile_url || '#';
+    profileLink.href = /^https?:\/\//i.test(data.profile_url || '') ? data.profile_url : '#';
     officialLink.href = WowArmory.officialProfileUrl({
       region: data.region || currentSettings().region,
       realm: data.realm || currentSettings().realm,
