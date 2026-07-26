@@ -1,9 +1,7 @@
 # WoW Armory Lite
 
-Cross-browser WebExtension that shows a World of Warcraft character summary —
-class, spec, item level, guild and current Mythic+ score — from the public
-Raider.IO API, right in your browser toolbar. A rebuild inspired by the old
-Netvibes WoW Armory widget that disappeared with the shutdown of netvibes.com.
+A cross-browser WebExtension that brings your World of Warcraft character stats to your browser toolbar using the public Raider.IO API.
+A rebuild inspired by the old Netvibes WoW Armory widget that disappeared with the shutdown of netvibes.com.
 
 ![version](https://img.shields.io/badge/version-0.1.1-blue) ![vanilla](https://img.shields.io/badge/stack-vanilla_JS-f7df1e) ![no build](https://img.shields.io/badge/build-none-brightgreen) ![manifest](https://img.shields.io/badge/manifest-v3-8b5cf6) ![browsers](https://img.shields.io/badge/browsers-Chrome_+_Firefox-3b82f6)
 
