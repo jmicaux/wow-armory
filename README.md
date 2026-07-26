@@ -3,7 +3,7 @@
 A cross-browser WebExtension that brings your World of Warcraft character stats to your browser toolbar using the public Raider.IO API.
 A rebuild inspired by the old Netvibes WoW Armory widget that disappeared with the shutdown of netvibes.com.
 
-![version](https://img.shields.io/badge/version-0.1.1-blue) ![vanilla](https://img.shields.io/badge/stack-vanilla_JS-f7df1e) ![no build](https://img.shields.io/badge/build-none-brightgreen) ![manifest](https://img.shields.io/badge/manifest-v3-8b5cf6) ![browsers](https://img.shields.io/badge/browsers-Chrome_+_Firefox-3b82f6)
+[![CI](https://github.com/jmicaux/wow-armory/actions/workflows/ci.yml/badge.svg)](https://github.com/jmicaux/wow-armory/actions/workflows/ci.yml) ![version](https://img.shields.io/badge/version-0.1.1-blue) ![vanilla](https://img.shields.io/badge/stack-vanilla_JS-f7df1e) ![no build](https://img.shields.io/badge/build-none-brightgreen) ![manifest](https://img.shields.io/badge/manifest-v3-8b5cf6) ![browsers](https://img.shields.io/badge/browsers-Chrome_+_Firefox-3b82f6)
 
 **🔗 Live preview: [jmicaux.github.io/wow-armory](https://jmicaux.github.io/wow-armory/)**
 
