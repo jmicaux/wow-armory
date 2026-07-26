@@ -636,3 +636,11 @@ select {
 .is-hidden {
   display: none;
 }
+
+.app-version {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}

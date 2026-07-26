@@ -1,21 +1,31 @@
 # WoW Armory Lite
 
-Cross-browser WebExtension rebuild inspired by the old Netvibes WoW Armory widget.
+Cross-browser WebExtension that shows a World of Warcraft character summary —
+class, spec, item level, guild and current Mythic+ score — from the public
+Raider.IO API, right in your browser toolbar. A rebuild inspired by the old
+Netvibes WoW Armory widget that disappeared with the shutdown of netvibes.com.
 
-The original UWA widget disappeared with the shutdown of netvibes.com. This rebuild relies on the public Raider.IO character profile API and runs as a browser extension.
+![version](https://img.shields.io/badge/version-0.1.1-blue) ![vanilla](https://img.shields.io/badge/stack-vanilla_JS-f7df1e) ![no build](https://img.shields.io/badge/build-none-brightgreen) ![manifest](https://img.shields.io/badge/manifest-v3-8b5cf6) ![browsers](https://img.shields.io/badge/browsers-Chrome_+_Firefox-3b82f6)
+
+**🔗 Live preview: [jmicaux.github.io/wow-armory](https://jmicaux.github.io/wow-armory/)**
+
+If you enjoy this extension, you can support it:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_me_a_coffee-ffdd00?style=flat-square&logo=buymeacoffee&logoColor=1a1a1a)](https://buymeacoffee.com/jmicaux)
 
 ## Features
 
-- Browser action popup
-- Region / realm / character form
-- Saved preferences with `storage.sync`
-- Character class/spec/race/faction summary
-- Guild, equipped item level, achievement points and current Mythic+ score
-- Link to Raider.IO profile
-- Options page
-- Chrome and Firefox compatible WebExtension structure
+- **Toolbar popup** — region / realm / character form, no account needed.
+- **Character summary** — class, spec, race, faction, guild, equipped item level,
+  achievement points and current Mythic+ score.
+- **Equipment breakdown** with Wowhead item tooltips.
+- **Saved preferences** with `storage.sync`; profile responses cached for 30 minutes
+  (with a short cooldown on forced refreshes), Wowhead item metadata for 14 days.
+- **Official Armory fallback** — a direct link to the Blizzard profile when Raider.IO
+  has no public data for the character.
+- **Options page** and a single MV3 manifest that runs on both Chrome and Firefox.
 
-## Local testing
+## Install & usage
 
 ### Chrome / Chromium
 
@@ -42,10 +52,44 @@ dist/v0.1.1/chrome/wow-armory-lite-chrome.zip     # load unpacked / Web Store
 dist/v0.1.1/firefox/wow-armory-lite-firefox.xpi   # AMO / temporary add-on
 ```
 
-## Notes
+See [CHANGELOG.md](CHANGELOG.md) for the version history.
 
-The extension does not use Blizzard API credentials. Data availability depends on Raider.IO and Wowhead.com.
-When Raider.IO has no public data for the configured character, the popup falls back to a direct link to the official World of Warcraft Armory profile.
+## Project structure
 
-Profile responses are cached locally for 30 minutes, with a short cooldown on forced refreshes.
-Wowhead item metadata is cached locally for 14 days.
+```
+wow-armory/
+├── manifest.json         # MV3 manifest (Chrome + Firefox via gecko settings)
+├── popup.html/.js        # toolbar popup UI and rendering
+├── options.html/.js      # options page
+├── shared.js             # Raider.IO fetching, settings and caching
+├── browser-polyfill.js   # minimal browser API shim for Chrome
+├── demo-shim.js          # localStorage storage shim for the web live preview
+├── version.js            # shows the manifest version in the popup
+├── styles.css            # popup and options styling
+├── index.html            # live-preview page (GitHub Pages)
+├── assets/               # icons and source favicons
+├── dist/                 # packaged .zip (Chrome) and .xpi (Firefox)
+└── README.md
+```
+
+## Data sources
+
+- Character data comes from the public [Raider.IO](https://raider.io/) character
+  profile API. No Blizzard API credentials are used.
+- Item tooltips come from [Wowhead](https://www.wowhead.com/).
+- When Raider.IO has no public data for the configured character, the popup falls
+  back to a direct link to the official World of Warcraft Armory profile.
+
+## License
+
+Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you are free to fork,
+modify and share this project **for noncommercial purposes**, as long as you keep the
+attribution (`Required Notice: Copyright jmicaux`). Commercial use is not permitted.
+
+## Credits
+
+Data by [Raider.IO](https://raider.io/) and [Wowhead](https://www.wowhead.com/). This
+extension is not affiliated with, endorsed by, or certified by Raider.IO, Wowhead or
+Blizzard Entertainment. World of Warcraft is a trademark of Blizzard Entertainment, Inc.
+
+Built with the help of [Claude](https://claude.ai/code).

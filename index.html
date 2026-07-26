@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WoW Armory Lite — WoW character summary in your browser</title>
+  <meta name="description" content="A lightweight browser extension that shows a World of Warcraft character summary — class, spec, item level, guild and current Mythic+ score — from Raider.IO, right in your toolbar. Free, open-source, Chrome & Firefox. Try the live demo.">
+  <meta name="keywords" content="wow armory, world of warcraft, raider.io, mythic plus score, character summary, browser extension, chrome, firefox, wowhead, item level">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#12203b" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#1b3a6b" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="assets/icon-128.png">
+
+  <!-- Social sharing -->
+  <meta property="og:url" content="https://jmicaux.github.io/wow-armory/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="WoW Armory Lite">
+  <meta property="og:title" content="WoW Armory Lite — WoW character summary in your browser">
+  <meta property="og:description" content="See a World of Warcraft character summary — item level, guild and Mythic+ score from Raider.IO — right in your toolbar. Free, open-source, Chrome & Firefox. Try the live demo.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://jmicaux.github.io/wow-armory/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="WoW Armory Lite — World of Warcraft character summary from Raider.IO">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="WoW Armory Lite — WoW character summary in your browser">
+  <meta name="twitter:description" content="A World of Warcraft character summary from Raider.IO, right in your toolbar. Free, open-source, Chrome & Firefox.">
+  <meta name="twitter:image" content="https://jmicaux.github.io/wow-armory/og-image.png">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://jmicaux.github.io/wow-armory/">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "WoW Armory Lite",
+    "description": "Show a World of Warcraft character summary from Raider.IO, right in your browser toolbar.",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Chrome, Chromium, Firefox",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --page-bg: #eef1f5;
+      --chrome-bg: #e3e6eb;
+      --chrome-border: #d0d4da;
+      --ink: #151922;
+      --muted: #6b7280;
+    }
+
+    html, body {
+      margin: 0; padding: 0; min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, #dbe4ff 0%, transparent 60%),
+        radial-gradient(1000px 500px at -10% 110%, #ffe9d6 0%, transparent 55%),
+        var(--page-bg);
+      color: var(--ink);
+    }
+
+    .wrap { max-width: 1140px; margin: 0 auto; padding: 32px 20px 56px; }
+
+    .intro { text-align: center; margin: 8px 0 24px; }
+    .intro h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.02em; }
+    .intro p { margin: 0 auto; max-width: 660px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .demo-note {
+      display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px;
+      background: #eef2ff; border: 1px solid #c7d2fe; color: #3730a3; font-size: 12.5px;
+    }
+
+    /* Browser frame */
+    .browser {
+      position: relative;
+      border: 1px solid var(--chrome-border); border-radius: 14px; overflow: visible;
+      background: #fff; box-shadow: 0 24px 60px -24px rgba(20, 25, 34, 0.4);
+    }
+    .chrome {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      background: var(--chrome-bg); border-bottom: 1px solid var(--chrome-border);
+      border-radius: 14px 14px 0 0;
+    }
+    .dots { display: flex; gap: 8px; flex-shrink: 0; }
+    .dots span { width: 12px; height: 12px; border-radius: 50%; }
+    .dots .r { background: #ff5f57; } .dots .y { background: #febc2e; } .dots .g { background: #28c840; }
+    .nav-btns { display: flex; gap: 4px; color: #9aa0a8; flex-shrink: 0; }
+    .nav-btns span { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; font-size: 15px; }
+    .address {
+      flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
+      padding: 7px 12px; background: #fff; border: 1px solid var(--chrome-border);
+      border-radius: 999px; color: var(--muted); font-size: 13px;
+    }
+    .address .lock { color: #22a45d; font-size: 12px; }
+    .address .url { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .ext-anchor { position: relative; flex-shrink: 0; }
+    .ext-btn {
+      display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px;
+      border: 1px solid var(--chrome-border); border-radius: 8px; background: #fff;
+      color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background-color .15s, border-color .15s, box-shadow .15s;
+    }
+    .ext-btn:hover { background: #f3f4f6; }
+    .ext-btn[aria-expanded="true"] {
+      border-color: #b9c0ff; box-shadow: 0 0 0 3px rgba(103, 116, 255, 0.18); background: #eef0ff;
+    }
+    .ext-btn .ico { width: 22px; height: 22px; display: grid; place-items: center; }
+    .ext-btn .ico img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+    /* Popup dropdown holding the real extension popup in an iframe */
+    .popup-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; z-index: 20;
+      width: 420px; max-width: 92vw;
+      background: #fff; border: 1px solid var(--chrome-border); border-radius: 12px;
+      box-shadow: 0 20px 45px -12px rgba(20, 25, 34, 0.45);
+      overflow: hidden; transform-origin: top right;
+      opacity: 0; transform: scale(0.96) translateY(-6px); pointer-events: none;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+    .browser.is-open .popup-dropdown { opacity: 1; transform: none; pointer-events: auto; }
+    .popup-dropdown::before {
+      content: ""; position: absolute; top: -6px; right: 22px; width: 12px; height: 12px;
+      background: #fff; border-left: 1px solid var(--chrome-border); border-top: 1px solid var(--chrome-border);
+      transform: rotate(45deg);
+    }
+    .popup-dropdown iframe { display: block; width: 420px; max-width: 92vw; height: 620px; border: 0; background: #fff; }
+
+    /* Fake page behind */
+    .body { min-height: 460px; border-radius: 0 0 14px 14px; overflow: hidden; }
+    .viewport { padding: 40px clamp(24px, 5vw, 64px); background: linear-gradient(180deg, #ffffff, #fbfbfd); }
+    .viewport .eyebrow { color: var(--muted); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .viewport h2 { margin: 8px 0 16px; font-size: clamp(24px, 4vw, 36px); letter-spacing: -0.02em; line-height: 1.1; }
+    .viewport p { color: #3a4150; line-height: 1.65; max-width: 60ch; }
+    .viewport .skeleton { margin-top: 28px; display: grid; gap: 12px; max-width: 560px; }
+    .viewport .skeleton i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, #eef0f3, #e4e7ec, #eef0f3); }
+    .viewport .skeleton i:nth-child(2) { width: 92%; } .viewport .skeleton i:nth-child(3) { width: 78%; } .viewport .skeleton i:nth-child(4) { width: 85%; }
+    .viewport .hint { margin-top: 32px; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+
+    .footer { margin-top: 22px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .footer a { color: #4b57e0; }
+
+    @media (max-width: 640px) { .viewport { padding: 28px 20px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="intro">
+      <h1>WoW Armory Lite — live demo</h1>
+      <p>A hands-on preview of the browser extension. Click the <strong>WoW Armory Lite</strong> button in the fake toolbar to open its popup — it loads a real World of Warcraft character summary live from Raider.IO.</p>
+      <span class="demo-note">Live data from the public Raider.IO API. Wowhead item tooltips may be limited in the browser demo; they work fully in the installed extension.</span>
+    </div>
+
+    <div class="browser" id="browser">
+      <div class="chrome">
+        <div class="dots" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="nav-btns" aria-hidden="true"><span>‹</span><span>›</span><span>⟳</span></div>
+        <div class="address">
+          <span class="lock" aria-hidden="true">🔒</span>
+          <span class="url">https://worldofwarcraft.blizzard.com/</span>
+        </div>
+        <div class="ext-anchor">
+          <button class="ext-btn" id="extBtn" type="button" aria-expanded="false" aria-controls="popupPanel">
+            <span class="ico" aria-hidden="true"><img src="assets/icon-128.png" alt="" width="20" height="20"></span>
+            <span>WoW Armory Lite</span>
+          </button>
+          <div class="popup-dropdown" id="popupPanel" role="dialog" aria-label="WoW Armory Lite popup">
+            <iframe id="popupFrame" title="WoW Armory Lite popup" loading="lazy" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="viewport">
+          <div class="eyebrow">World of Warcraft</div>
+          <h2>Check any character without leaving your page</h2>
+          <p>The popup on the right is exactly what the extension shows from your browser toolbar: class, spec, item level, guild and the current Mythic+ score, pulled live from Raider.IO. Change the region, realm and character right inside it.</p>
+          <div class="skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="hint"><span>Open it from the toolbar button</span><span aria-hidden="true">↗</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="footer">This is a demo. Get the real extension on the <a href="https://github.com/jmicaux/wow-armory">GitHub repository</a>.</p>
+  </div>
+
+  <script>
+    var browserEl = document.getElementById('browser');
+    var extBtn = document.getElementById('extBtn');
+    var frame = document.getElementById('popupFrame');
+    var frameLoaded = false;
+
+    function loadFrameOnce() {
+      if (!frameLoaded) { frame.src = 'popup.html'; frameLoaded = true; }
+    }
+
+    function setOpen(open) {
+      browserEl.classList.toggle('is-open', open);
+      extBtn.setAttribute('aria-expanded', String(open));
+      if (open) { loadFrameOnce(); }
+    }
+
+    extBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!browserEl.classList.contains('is-open'));
+    });
+    document.addEventListener('click', function (e) {
+      if (browserEl.classList.contains('is-open') && !document.getElementById('popupPanel').contains(e.target) && e.target !== extBtn) {
+        setOpen(false);
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && browserEl.classList.contains('is-open')) { setOpen(false); extBtn.focus(); }
+    });
+
+    // Open the popup by default so the demo is immediately visible.
+    setOpen(true);
+  </script>
+</body>
+</html>
