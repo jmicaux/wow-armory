@@ -23,12 +23,24 @@ The original UWA widget disappeared with the shutdown of netvibes.com. This rebu
 2. Enable Developer mode
 3. Click "Load unpacked"
 4. Select this `wow-armory` folder
+5. For packaged testing, use `dist/v0.1.1/chrome/wow-armory-lite-chrome.zip`
 
 ### Firefox
 
 1. Open `about:debugging#/runtime/this-firefox`
 2. Click "Load Temporary Add-on"
 3. Select `manifest.json`
+4. For packaged testing, use `dist/v0.1.1/firefox/wow-armory-lite-firefox.xpi`
+
+## Packaging
+
+Chrome and Firefox ship the same files (the manifest already includes
+`browser_specific_settings.gecko`), so both builds have identical contents:
+
+```
+dist/v0.1.1/chrome/wow-armory-lite-chrome.zip     # load unpacked / Web Store
+dist/v0.1.1/firefox/wow-armory-lite-firefox.xpi   # AMO / temporary add-on
+```
 
 ## Notes
 
